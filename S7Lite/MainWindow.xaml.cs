@@ -28,7 +28,18 @@ namespace S7Lite
         byte[] DB1 = new byte[256];
         Thread tserver;
 
-        Boolean run;
+        Boolean _run;
+
+
+
+        public Boolean run
+        {
+            get { return _run; }
+            set { 
+                _run = value;
+                btn_connect.Content = value ? "Stop" : "Start";
+                }
+        }
 
         public MainWindow()
         {
@@ -66,13 +77,18 @@ namespace S7Lite
 
         private void btn_connect_Click(object sender, RoutedEventArgs e)
         {
-            if (StartServer())
+            if (!run)
             {
-                run = true;
-                tserver = new Thread(() => { ServerWork(); });
-                tserver.Name = "S7Server";
+                if (StartServer())
+                {
+                    run = true;
+                    tserver = new Thread(() => { ServerWork(); });
+                    tserver.Name = "S7Server";
+                }
+            } else
+            {
+                run = false;
             }
-            
         }
 
         private void ServerWork()
@@ -92,8 +108,6 @@ namespace S7Lite
                 if (tserver.IsAlive)
                 {
                     tserver.Join(1000);
-
-
                 }
             }
         }
