@@ -77,10 +77,27 @@ namespace S7Lite
 
         private void ServerWork()
         {
-            while (run)
+            try
             {
+                while (run)
+                {
+                    TestServer();
+                }
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            finally
+            {
+                run = false;
+            }
+            
+        }
 
-            }   
+        private void TestServer()
+        {
+            Log("p");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -92,10 +109,13 @@ namespace S7Lite
                 if (tserver.IsAlive)
                 {
                     tserver.Join(1000);
-
-
                 }
             }
+        }
+
+        public void Log(string msg)
+        {
+            LogConsole.Text += DateTime.Now.ToString("HH:mm:SS") + msg + Environment.NewLine;
         }
     }
 }

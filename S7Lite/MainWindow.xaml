@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:S7Lite"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="350"
+        Title="MainWindow" Height="550" Width="350"
         Background="#FF576470" Closing="Window_Closing">
     
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"></RowDefinition>
             <RowDefinition Height="9*"></RowDefinition>
+            <RowDefinition x:Name="testik" Height="4*"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
@@ -19,11 +20,11 @@
             <Button Name="btn_connect" Click="btn_connect_Click">Start</Button>
         </StackPanel>
 
+        <!-- Log -->
+        <TextBlock x:Name="LogConsole" Grid.Row="2" Background="Black" Foreground="WhiteSmoke" Padding="2" FontSize="12"/>
 
-        
-
-
-        <Grid Grid.Row="2">
+        <!-- Last row -->
+        <Grid Grid.Row="3">
             
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
