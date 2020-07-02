@@ -28,7 +28,7 @@ namespace S7Lite
         byte[] DB1 = new byte[256];
         Thread tserver;
 
-        Boolean _run;
+        private Boolean _run;
 
 
 
@@ -37,7 +37,7 @@ namespace S7Lite
             get { return _run; }
             set { 
                 _run = value;
-                btn_connect.Content = value ? "Stop" : "Start";
+               // btn_connect.Content = value ? "Stop" : "Start";
                 }
         }
 
@@ -77,17 +77,27 @@ namespace S7Lite
 
         private void btn_connect_Click(object sender, RoutedEventArgs e)
         {
-            if (!run)
-            {
-                if (StartServer())
+            try { 
+                if (!run)
                 {
-                    run = true;
-                    tserver = new Thread(() => { ServerWork(); });
-                    tserver.Name = "S7Server";
-                }
-            } else
+                    if (StartServer())
+                    {
+                        Log("Server started");
+                        run = true;
+                        tserver = new Thread(() => { ServerWork(); });
+                        tserver.Name = "S7Server";
+                        tserver.Start();
+                    }
+                } else
+                {
+                    run = false;
+                    Log("Stopping server");
+                    
+                    Log("Server join done");
+            }
+            } catch (Exception ex)
             {
-                run = false;
+                Log(ex.Message);
             }
         }
 
@@ -102,18 +112,20 @@ namespace S7Lite
             }
             catch (Exception ex)
             {
-                
+                Dispatcher.Invoke(new dlg_Log(Log), ex.Message);
             }
             finally
             {
                 run = false;
+                Dispatcher.Invoke(new dlg_Log(Log), "Finally Server work");
             }
             
         }
 
         private void TestServer()
         {
-            Log("p");
+            Thread.Sleep(1000);
+            Dispatcher.Invoke(new dlg_Log(Log), "Run");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -129,9 +141,22 @@ namespace S7Lite
             }
         }
 
+        private delegate void dlg_Log(string msg);
         public void Log(string msg)
         {
-            LogConsole.Text += DateTime.Now.ToString("HH:mm:SS") + msg + Environment.NewLine;
+            LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
+            Scroll.ScrollToBottom();
+        }
+
+        private void Label_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (RowLog.Height.Value == 0)
+            {
+                RowLog.Height = new GridLength(4, GridUnitType.Star);
+            } else
+            {
+                RowLog.Height = new GridLength(0);
+            }
         }
     }
 }
