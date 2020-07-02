@@ -29,16 +29,10 @@ namespace S7Lite
         Thread tserver;
 
         private Boolean _run;
-
-
-
         public Boolean run
         {
             get { return _run; }
-            set { 
-                _run = value;
-               // btn_connect.Content = value ? "Stop" : "Start";
-                }
+            set { _run = value;}
         }
 
         public MainWindow()
@@ -63,9 +57,7 @@ namespace S7Lite
                     cmb_ip.Items.Add(ip.ToString()) ;
                 }
             }
-
             if (cmb_ip.HasItems) cmb_ip.SelectedIndex = 0;
-
         }
 
         private Boolean StartServer()
