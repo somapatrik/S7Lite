@@ -26,8 +26,8 @@
     </Style>
 
     <Style x:Key="Address" TargetType="TextBlock">
-        <Setter Property="Background" Value="#FF353028"/>
-        <Setter Property="Foreground" Value="#FFAAAAAA"/>
+        <Setter Property="Background" Value="#FF274968"/>
+        <Setter Property="Foreground" Value="White"/>
     </Style>
 
 </ResourceDictionary>

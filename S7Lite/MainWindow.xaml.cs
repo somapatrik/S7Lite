@@ -152,31 +152,56 @@ namespace S7Lite
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            AddRow();
+        }
+
+        private void AddRow()
+        {
             GridData.RowDefinitions.Add(new RowDefinition());
 
-            TextBlock box1 = new TextBlock();
-            TextBox box2 = new TextBox();
+            int lastrow = GridData.RowDefinitions.Count - 1;
+
+            TextBlock address = new TextBlock();
+            TextBox value = new TextBox();
             ComboBox combo = new ComboBox();
 
-            combo.Style = Resources["DataTypeCombo"] as Style;
-           // box1.Style = Resources["Address"] as Style;
+            combo.SelectionChanged += cmbtype_SelectionChanged;
+            combo.Name = "cmbtype" + lastrow;
 
-            Grid.SetRow(btnAdd, GridData.RowDefinitions.Count - 1);
-            GridData.Children.Add(box1);
-            GridData.Children.Add(box2);
+            address.Name = "blcaddress" + lastrow;
+            value.Name = "txtvalue" + lastrow;
+
+            combo.Style = Resources["DataTypeCombo"] as Style;
+            address.Style = Resources["Address"] as Style;
+
+
+            Grid.SetRow(btnAdd, lastrow);
+            GridData.Children.Add(address);
+            GridData.Children.Add(value);
             GridData.Children.Add(combo);
 
-            Grid.SetRow(box1, GridData.RowDefinitions.Count - 2);
-            Grid.SetRow(box2, GridData.RowDefinitions.Count - 2);
-            Grid.SetRow(combo, GridData.RowDefinitions.Count - 2);
+            Grid.SetRow(address, lastrow - 1);
+            Grid.SetRow(value, lastrow - 1);
+            Grid.SetRow(combo, lastrow - 1);
 
-            Grid.SetColumn(box1, 1);
+            Grid.SetColumn(address, 1);
             Grid.SetColumn(combo, 0);
-            Grid.SetColumn(box2, 2);
+            Grid.SetColumn(value, 2);
 
 
             ScrollData.ScrollToBottom();
+        }
 
+        private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox actcombo = (ComboBox)sender;
+            int selectedrow = Int32.Parse(actcombo.Name[actcombo.Name.Length - 1].ToString());
+            int lastrow = GridData.RowDefinitions.Count - 1;
+
+            if (selectedrow == lastrow)
+            {
+                AddRow();
+            }
         }
     }
 }
