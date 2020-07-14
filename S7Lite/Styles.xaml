@@ -15,11 +15,19 @@
         <Setter Property="ItemsSource">
             <Setter.Value>
                 <c:ArrayList>
-                    <ComboBoxItem>item one</ComboBoxItem>
-                    <ComboBoxItem>item two</ComboBoxItem>
+                    <ComboBoxItem>BOOL</ComboBoxItem>
+                    <ComboBoxItem>INT</ComboBoxItem>
+                    <ComboBoxItem>DNT</ComboBoxItem>
+                    <ComboBoxItem>REAL</ComboBoxItem>
+                    <ComboBoxItem>CHAR</ComboBoxItem>
                 </c:ArrayList>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="Address" TargetType="TextBlock">
+        <Setter Property="Background" Value="#FF353028"/>
+        <Setter Property="Foreground" Value="#FFAAAAAA"/>
     </Style>
 
 </ResourceDictionary>

@@ -27,34 +27,28 @@
             <Button x:Name="btn_connect" Click="btn_connect_Click" FontSize="14" Padding="5" Content="Start"/>
         </StackPanel>
 
-        <!-- <Grid Grid.Row="1" ShowGridLines="True">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-        </Grid>
-        -->
-        <Grid Grid.Row="1" VerticalAlignment="Top">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-       
-            <TextBox Grid.Row="0" Grid.Column="0"></TextBox>
-            <ComboBox Name="cmbtype" Style="{StaticResource DataTypeCombo}" Grid.Row="0" Grid.Column="1"/>
-            <TextBox Grid.Row="0" Grid.Column="2"/>
 
-        </Grid>
+        <ScrollViewer x:Name="ScrollData" Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid x:Name="GridData" Grid.Row="1" VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+
+                <ComboBox Name="cmbtype" Style="{StaticResource DataTypeCombo}" Grid.Row="0" Grid.Column="0"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" />
+                <TextBox Grid.Row="0" Grid.Column="2"/>
+
+                <Button Grid.Row="1" Grid.Column="2" Click="Button_Click" x:Name="btnAdd">Add</Button>
+
+            </Grid>
+        </ScrollViewer>
 
         <Grid Grid.Row="2">
             <Label Content="Log" FontSize="14" Foreground="White" 

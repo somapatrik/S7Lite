@@ -149,5 +149,34 @@ namespace S7Lite
                 RowLog.Height = new GridLength(0);
             }
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            GridData.RowDefinitions.Add(new RowDefinition());
+
+            TextBlock box1 = new TextBlock();
+            TextBox box2 = new TextBox();
+            ComboBox combo = new ComboBox();
+
+            combo.Style = Resources["DataTypeCombo"] as Style;
+           // box1.Style = Resources["Address"] as Style;
+
+            Grid.SetRow(btnAdd, GridData.RowDefinitions.Count - 1);
+            GridData.Children.Add(box1);
+            GridData.Children.Add(box2);
+            GridData.Children.Add(combo);
+
+            Grid.SetRow(box1, GridData.RowDefinitions.Count - 2);
+            Grid.SetRow(box2, GridData.RowDefinitions.Count - 2);
+            Grid.SetRow(combo, GridData.RowDefinitions.Count - 2);
+
+            Grid.SetColumn(box1, 1);
+            Grid.SetColumn(combo, 0);
+            Grid.SetColumn(box2, 2);
+
+
+            ScrollData.ScrollToBottom();
+
+        }
     }
 }
