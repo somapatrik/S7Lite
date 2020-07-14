@@ -27,12 +27,33 @@
             <Button x:Name="btn_connect" Click="btn_connect_Click" FontSize="14" Padding="5" Content="Start"/>
         </StackPanel>
 
-        <Grid Grid.Row="1" ShowGridLines="True">
+        <!-- <Grid Grid.Row="1" ShowGridLines="True">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+        </Grid>
+        -->
+        <Grid Grid.Row="1" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+       
+            <TextBox Grid.Row="0" Grid.Column="0"></TextBox>
+            <ComboBox Name="cmbtype" Style="{StaticResource DataTypeCombo}" Grid.Row="0" Grid.Column="1"/>
+            <TextBox Grid.Row="0" Grid.Column="2"/>
+
         </Grid>
 
         <Grid Grid.Row="2">

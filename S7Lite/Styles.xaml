@@ -11,4 +11,15 @@
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="ComboBox" x:Key="DataTypeCombo" xmlns:c="clr-namespace:System.Collections;assembly=mscorlib">
+        <Setter Property="ItemsSource">
+            <Setter.Value>
+                <c:ArrayList>
+                    <ComboBoxItem>item one</ComboBoxItem>
+                    <ComboBoxItem>item two</ComboBoxItem>
+                </c:ArrayList>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

@@ -27,7 +27,7 @@ namespace S7Lite
         S7Server server;
         byte[] DB1 = new byte[256];
         Thread tserver;
-
+        
         private Boolean _run;
         public Boolean run
         {
@@ -84,8 +84,6 @@ namespace S7Lite
                 {
                     run = false;
                     Log("Stopping server");
-                    
-                    Log("Server join done");
             }
             } catch (Exception ex)
             {
@@ -100,6 +98,7 @@ namespace S7Lite
                 while (run)
                 {
                     TestServer();
+
                 }
             }
             catch (Exception ex)
@@ -109,7 +108,7 @@ namespace S7Lite
             finally
             {
                 run = false;
-                Dispatcher.Invoke(new dlg_Log(Log), "Finally Server work");
+                Dispatcher.Invoke(new dlg_Log(Log), "Server stopped");
             }
             
         }
