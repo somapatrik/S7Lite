@@ -27,7 +27,8 @@ namespace S7Lite
         S7Server server;
         byte[] DB1 = new byte[256];
         Thread tserver;
-        
+        List<string> combotypes = new List<string> {"BOOL", "INT", "DINT", "REAL", "CHAR"};
+
         private Boolean _run;
         public Boolean run
         {
@@ -43,6 +44,7 @@ namespace S7Lite
 
         private void SetGui()
         {
+            AddRow();
             cmb_ip.Items.Clear();
             GetIp();
         }
@@ -152,42 +154,55 @@ namespace S7Lite
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            AddRow();
+           // AddRow();
         }
 
         private void AddRow()
         {
+
             GridData.RowDefinitions.Add(new RowDefinition());
 
+            // Newly added row
             int lastrow = GridData.RowDefinitions.Count - 1;
+            int lastdatarow = lastrow - 1;
 
             TextBlock address = new TextBlock();
             TextBox value = new TextBox();
             ComboBox combo = new ComboBox();
 
+            foreach(string type in combotypes)
+            {
+                combo.Items.Add(type);
+            }
+
             combo.SelectionChanged += cmbtype_SelectionChanged;
-            combo.Name = "cmbtype" + lastrow;
+            combo.Name = "cmbtype_" + lastdatarow.ToString();
 
-            address.Name = "blcaddress" + lastrow;
-            value.Name = "txtvalue" + lastrow;
+            address.Name = "blcaddress_" + lastdatarow.ToString();
+            value.Name = "txtvalue_" + lastdatarow.ToString();
 
-            combo.Style = Resources["DataTypeCombo"] as Style;
+            //combo.Style = Resources["DataTypeCombo"] as Style;
             address.Style = Resources["Address"] as Style;
 
-
+            // Get button to last row
             Grid.SetRow(btnAdd, lastrow);
+
+            // New data row
             GridData.Children.Add(address);
             GridData.Children.Add(value);
             GridData.Children.Add(combo);
 
-            Grid.SetRow(address, lastrow - 1);
-            Grid.SetRow(value, lastrow - 1);
-            Grid.SetRow(combo, lastrow - 1);
+            Grid.SetRow(address, lastdatarow);
+            Grid.SetRow(value, lastdatarow);
+            Grid.SetRow(combo, lastdatarow);
 
             Grid.SetColumn(address, 1);
             Grid.SetColumn(combo, 0);
             Grid.SetColumn(value, 2);
 
+            int z = lastdatarow * (-1);
+            Grid.SetZIndex(combo, z);
+            address.Text = "z-index: " + z.ToString() + " Name: " + combo.Name;
 
             ScrollData.ScrollToBottom();
         }
@@ -195,10 +210,11 @@ namespace S7Lite
         private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox actcombo = (ComboBox)sender;
-            int selectedrow = Int32.Parse(actcombo.Name[actcombo.Name.Length - 1].ToString());
-            int lastrow = GridData.RowDefinitions.Count - 1;
 
-            if (selectedrow == lastrow)
+            int selectedrow = Int32.Parse(actcombo.Name.Substring(actcombo.Name.IndexOf('_') + 1));
+            int lastdatarow = GridData.RowDefinitions.Count - 2;
+
+            if (selectedrow == lastdatarow)
             {
                 AddRow();
             }
