@@ -27,25 +27,31 @@
             <Button x:Name="btn_connect" Click="btn_connect_Click" FontSize="14" Padding="5" Content="Start"/>
         </StackPanel>
 
-        <Grid Grid.Row="1" ShowGridLines="True">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0">Type</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="1">Address</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="2">Value</TextBlock>
-            
-            <ComboBox Grid.Row="1" Grid.Column="0"></ComboBox>
-            <TextBlock Grid.Row="1" Grid.Column="1"></TextBlock>
-            <TextBox  Grid.Row="1" Grid.Column="2"></TextBox>
-        </Grid>
+
+        <ScrollViewer x:Name="ScrollData" Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid x:Name="GridData" Grid.Row="1" VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+
+                <!--
+                <ComboBox x:Name="cmbtype_0" Panel.ZIndex="1000" Grid.Row="0" Grid.Column="0" SelectionChanged="cmbtype_SelectionChanged"/>
+                <TextBlock x:Name="blcaddress0" Grid.Row="0" Grid.Column="1" Style="{StaticResource Address}"/>
+                <TextBox x:Name="txtvalue0" Grid.Row="0" Grid.Column="2"/>
+                -->
+                
+                <Button Grid.Row="1" Grid.Column="0" Click="Button_Click" x:Name="btnAdd">Add</Button>
+                <Button Grid.Row="1" Grid.Column="2" x:Name="btnRemove" Click="Button_Click">Del</Button>
+
+            </Grid>
+        </ScrollViewer>
 
         <Grid Grid.Row="2">
             <Label Content="Log" FontSize="14" Foreground="White" 

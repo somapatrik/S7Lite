@@ -11,4 +11,23 @@
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="ComboBox" x:Key="DataTypeCombo" xmlns:c="clr-namespace:System.Collections;assembly=mscorlib">
+        <Setter Property="ItemsSource">
+            <Setter.Value>
+                <c:ArrayList>
+                    <ComboBoxItem>BOOL</ComboBoxItem>
+                    <ComboBoxItem>INT</ComboBoxItem>
+                    <ComboBoxItem>DNT</ComboBoxItem>
+                    <ComboBoxItem>REAL</ComboBoxItem>
+                    <ComboBoxItem>CHAR</ComboBoxItem>
+                </c:ArrayList>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Address" TargetType="TextBlock">
+        <Setter Property="Background" Value="#FF274968"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
 </ResourceDictionary>
