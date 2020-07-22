@@ -29,10 +29,22 @@
 
         <Grid Grid.Row="1" ShowGridLines="True">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0">Type</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="1">Address</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="2">Value</TextBlock>
+            
+            <ComboBox Grid.Row="1" Grid.Column="0"></ComboBox>
+            <TextBlock Grid.Row="1" Grid.Column="1"></TextBlock>
+            <TextBox  Grid.Row="1" Grid.Column="2"></TextBox>
         </Grid>
 
         <Grid Grid.Row="2">
