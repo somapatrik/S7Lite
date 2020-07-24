@@ -12,21 +12,47 @@ namespace S7Lite
 
         public static readonly object LogLock = new object() ;
 
-        public static void Logi(string msg)
+        public enum LogState { Normal, Error, Warning};
+
+        public static void Log(string msg, LogState msgstate = LogState.Normal)
         {
 
-           lock(LogLock) {
-                
-                    if (!File.Exists("log.txt"))
-                    {
-                        File.Create("log.txt");
-                    }
+           lock(LogLock) 
+            {
+                Directory.CreateDirectory("Log");
+                CheckLog();
 
-                    File.AppendAllText("log.txt", msg + Environment.NewLine);
+                string state = "";
 
-                    
+                switch (msgstate)
+                {
+                    case LogState.Error:
+                        state = " [ERROR] ";
+                        break;
+                    case LogState.Warning:
+                        state = " [WARNING] ";
+                        break;
+                }
+                 
+                string msgline = "[" + DateTime.Now.ToString("HH:mm:ss") + "] " + state + msg;
+
+                File.AppendAllText(Path.Combine("Log",DateTime.Now.ToString("yyMMdd")) + ".txt", msgline + Environment.NewLine);
             }
-            
+
         } 
+
+        private static async void CheckLog()
+        {
+            await new Task(new Action(() =>
+            {
+                string filename = Path.Combine("Log", DateTime.Now.ToString("yyMMdd") + ".txt");
+
+                if (!File.Exists(filename))
+                {
+                    File.Create(filename);
+                }
+            }));
+        }
+       
     }
 }

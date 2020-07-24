@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Reflection;
 using Snap7;
 
 namespace S7Lite
@@ -29,16 +30,24 @@ namespace S7Lite
         Thread tserver;
         List<string> combotypes = new List<string> {"BOOL", "INT", "DINT", "REAL", "CHAR"};
 
+        // Thread server
         private Boolean _run;
+
         public Boolean run
         {
             get { return _run; }
-            set { _run = value;}
+            set
+            {
+                _run = value;;
+            }
         }
 
         public MainWindow()
         {
             InitializeComponent();
+
+            Logger.Log("[START]");
+
             SetGui();
         }
 
@@ -72,12 +81,16 @@ namespace S7Lite
         private void btn_connect_Click(object sender, RoutedEventArgs e)
         {
             try { 
+
                 if (!run)
                 {
                     if (StartServer())
                     {
-                        Log("Server started");
+                        btn_connect.Content = "Stop";
+                        ConsoleLog("Server started");
+                        Logger.Log("Server started at " + cmb_ip.Text);
                         run = true;
+
                         tserver = new Thread(() => { ServerWork(); });
                         tserver.Name = "S7Server";
                         tserver.Start();
@@ -85,11 +98,13 @@ namespace S7Lite
                 } else
                 {
                     run = false;
-                    Log("Stopping server");
-            }
+                    ConsoleLog("Stopping server");
+                    Logger.Log("Stopping server");
+                }
+
             } catch (Exception ex)
             {
-                Log(ex.Message);
+                Logger.Log("[" + MethodBase.GetCurrentMethod().Name + "]" + ex.Message);
             }
         }
 
@@ -100,17 +115,18 @@ namespace S7Lite
                 while (run)
                 {
                     TestServer();
-
                 }
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(new dlg_Log(Log), ex.Message);
+                Dispatcher.Invoke(() => { ConsoleLog(ex.Message); });
+                Logger.Log(ex.Message, Logger.LogState.Error);
             }
             finally
             {
-                run = false;
-                Dispatcher.Invoke(new dlg_Log(Log), "Server stopped");
+                btn_connect.Dispatcher.Invoke(() => { btn_connect.Content = "Stop"; });
+                Dispatcher.Invoke(() => { ConsoleLog("Server stopped"); });
+                Logger.Log("[" + MethodInfo.GetCurrentMethod().Name + "]" + " Server stopped");
             }
             
         }
@@ -118,7 +134,6 @@ namespace S7Lite
         private void TestServer()
         {
             Thread.Sleep(1000);
-            Dispatcher.Invoke(new dlg_Log(Log), "Run");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -134,11 +149,10 @@ namespace S7Lite
             }
         }
 
-        private delegate void dlg_Log(string msg);
-        public void Log(string msg)
+        public void ConsoleLog(string msg)
         {
-            LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
-            Scroll.ScrollToBottom();
+           LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
+           Scroll.ScrollToBottom();
         }
 
         private void Label_MouseDown(object sender, MouseButtonEventArgs e)
@@ -202,7 +216,6 @@ namespace S7Lite
 
             int z = lastdatarow * (-1);
             Grid.SetZIndex(combo, z);
-            address.Text = "z-index: " + z.ToString() + " Name: " + combo.Name;
 
             ScrollData.ScrollToBottom();
         }
