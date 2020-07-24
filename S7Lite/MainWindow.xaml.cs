@@ -46,7 +46,7 @@ namespace S7Lite
         {
             InitializeComponent();
 
-            Logger.Log("[START]");
+            Logger.Log("[ -- APP START -- ]");
 
             SetGui();
         }
@@ -125,6 +125,7 @@ namespace S7Lite
             finally
             {
                 btn_connect.Dispatcher.Invoke(() => { btn_connect.Content = "Stop"; });
+
                 Dispatcher.Invoke(() => { ConsoleLog("Server stopped"); });
                 Logger.Log("[" + MethodInfo.GetCurrentMethod().Name + "]" + " Server stopped");
             }
@@ -147,6 +148,8 @@ namespace S7Lite
                     tserver.Join(1000);
                 }
             }
+
+            Logger.Log("[ -- APP CLOSE -- ]");
         }
 
         public void ConsoleLog(string msg)
