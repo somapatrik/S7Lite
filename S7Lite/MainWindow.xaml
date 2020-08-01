@@ -27,11 +27,11 @@
             <Button x:Name="btn_connect" Click="btn_connect_Click" FontSize="14" Padding="5" Content="Start"/>
         </StackPanel>
 
-
         <ScrollViewer x:Name="ScrollData" Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <Grid x:Name="GridData" Grid.Row="1" VerticalAlignment="Top">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
@@ -39,13 +39,6 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-
-
-                <!--
-                <ComboBox x:Name="cmbtype_0" Panel.ZIndex="1000" Grid.Row="0" Grid.Column="0" SelectionChanged="cmbtype_SelectionChanged"/>
-                <TextBlock x:Name="blcaddress0" Grid.Row="0" Grid.Column="1" Style="{StaticResource Address}"/>
-                <TextBox x:Name="txtvalue0" Grid.Row="0" Grid.Column="2"/>
-                -->
                 
                 <Button Grid.Row="1" Grid.Column="0" Click="Button_Click" x:Name="btnAdd">Add</Button>
                 <Button Grid.Row="1" Grid.Column="2" x:Name="btnRemove" Click="Button_Click">Del</Button>

@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Reflection;
 using Snap7;
+using System.Runtime.CompilerServices;
 
 namespace S7Lite
 {
@@ -26,13 +27,16 @@ namespace S7Lite
     {
 
         S7Server server;
-        byte[] DB1 = new byte[256];
         Thread tserver;
+
+        int DB1Size = 256;
+        int DB1FreeByte = 0;
+        byte[] DB1;
+
         List<string> combotypes = new List<string> {"BOOL", "INT", "DINT", "REAL", "CHAR"};
 
         // Thread server
         private Boolean _run;
-
         public Boolean run
         {
             get { return _run; }
@@ -45,8 +49,9 @@ namespace S7Lite
         public MainWindow()
         {
             InitializeComponent();
-
             Logger.Log("[ -- APP START -- ]");
+
+            DB1 = new byte[DB1Size];
 
             SetGui();
         }
@@ -78,6 +83,21 @@ namespace S7Lite
             return server.StartTo(cmb_ip.SelectedItem.ToString()) == 0 ? true : false;
         }
 
+        private void StopServer()
+        {
+            try
+            {
+                if (server != null)
+                {
+                    server.Stop();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex.Message, Logger.LogState.Error);
+            }
+        }
+
         private void btn_connect_Click(object sender, RoutedEventArgs e)
         {
             try { 
@@ -98,8 +118,10 @@ namespace S7Lite
                 } else
                 {
                     run = false;
+                    StopServer();
                     ConsoleLog("Stopping server");
                     Logger.Log("Stopping server");
+                    btn_connect.Content = "Start";
                 }
 
             } catch (Exception ex)
@@ -171,7 +193,7 @@ namespace S7Lite
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-           // AddRow();
+           AddRow();
         }
 
         private void AddRow()
@@ -234,6 +256,44 @@ namespace S7Lite
             {
                 AddRow();
             }
+
+            TextBlock ActAddresBox = null;
+
+            foreach (TextBlock child in GridData.Children.OfType<TextBlock>()) {
+
+                if (child.Name.ToString() == "blcaddress_" + selectedrow.ToString()) 
+                {
+                    ActAddresBox = child;
+                    break;
+                }
+
+            }
+
+             
+
+            switch (actcombo.SelectedValue)
+            {
+                case "BOOL":
+                    DB1FreeByte += 1;
+                    break;
+                case "INT":
+                    actcombo.Tag = DB1FreeByte;
+                    ActAddresBox.Text = "DB1." + "DBW" + actcombo.Tag.ToString() ;
+                    DB1FreeByte += 1;
+                    break;
+                case "DINT":
+                    DB1FreeByte += 4;
+                    break;
+                case "REAL":
+                    DB1FreeByte += 8;
+                    break;
+                case "CHAR":
+                    DB1FreeByte += 1;
+                    break;
+            }
+
+
+
         }
     }
 }
