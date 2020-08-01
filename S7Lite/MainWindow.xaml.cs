@@ -220,6 +220,8 @@ namespace S7Lite
             address.Name = "blcaddress_" + lastdatarow.ToString();
             value.Name = "txtvalue_" + lastdatarow.ToString();
 
+            address.ApplyTemplate();
+
             //combo.Style = Resources["DataTypeCombo"] as Style;
             address.Style = Resources["Address"] as Style;
 
@@ -259,9 +261,10 @@ namespace S7Lite
 
             TextBlock ActAddresBox = null;
 
-            foreach (TextBlock child in GridData.Children.OfType<TextBlock>()) {
+            foreach (TextBlock child in GridData.Children.OfType<TextBlock>())
+            {
 
-                if (child.Name.ToString() == "blcaddress_" + selectedrow.ToString()) 
+                if (child.Name.ToString() == "blcaddress_" + selectedrow.ToString())
                 {
                     ActAddresBox = child;
                     break;
@@ -269,25 +272,34 @@ namespace S7Lite
 
             }
 
-             
+            if (ActAddresBox == null)
+            {
+                ConsoleLog("Could not find "+ "blcaddress_" + selectedrow.ToString());
+                return;
+            }
+
+            actcombo.Tag = DB1FreeByte;
 
             switch (actcombo.SelectedValue)
             {
                 case "BOOL":
+                    ActAddresBox.Text = "DB1." + "DBX" + actcombo.Tag.ToString();
                     DB1FreeByte += 1;
                     break;
                 case "INT":
-                    actcombo.Tag = DB1FreeByte;
                     ActAddresBox.Text = "DB1." + "DBW" + actcombo.Tag.ToString() ;
-                    DB1FreeByte += 1;
+                    DB1FreeByte += 2;
                     break;
                 case "DINT":
+                    ActAddresBox.Text = "DB1." + "DBD" + actcombo.Tag.ToString();
                     DB1FreeByte += 4;
                     break;
                 case "REAL":
-                    DB1FreeByte += 8;
+                    ActAddresBox.Text = "DB1." + "DBD" + actcombo.Tag.ToString();
+                    DB1FreeByte += 4;
                     break;
                 case "CHAR":
+                    ActAddresBox.Text = "DB1." + "DBB" + actcombo.Tag.ToString();
                     DB1FreeByte += 1;
                     break;
             }
