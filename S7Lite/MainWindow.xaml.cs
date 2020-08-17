@@ -29,11 +29,12 @@ namespace S7Lite
         S7Server server;
         Thread tserver;
 
-        int DB1Size = 256;
-        int DB1FreeByte = 0;
+        int DB1Size = 1024;
+        List<int> DB1UsedBytes;
+        Boolean DB1OutOfSpace = false;
         byte[] DB1;
 
-        List<string> combotypes = new List<string> {"BOOL", "INT", "DINT", "REAL", "CHAR"};
+        List<string> combotypes = new List<string> {"BIT","BYTE","WORD","DWORD","INT", "DINT", "REAL", "CHAR"};
 
         // Thread server
         private Boolean _run;
@@ -196,14 +197,60 @@ namespace S7Lite
            AddRow();
         }
 
+
+        /// <summary>
+        /// Tests if there is required space in DB and returns start byte
+        /// </summary>
+        /// <param name="NeedLength">How many bytes is needed</param>
+        /// <returns></returns>
+        private int GetLastFreeByte(int StartByte = -10, int NeedLength = 1)
+        {
+
+            if (DB1UsedBytes.Count == 0)
+            {
+                return 0;
+            }
+            else { 
+             
+                // Start byte
+                int Start;
+
+                if (StartByte == -10)
+                {
+                    Start = DB1UsedBytes.Max() + 1;  // First avaiable byte
+                } 
+                else
+                {
+                    foreach(int Act in DB1UsedBytes)
+                    {
+                        int Next = Act + 1;
+                        if (DB1UsedBytes.Contains(Next))
+                        {
+                            Start = Next;
+                            break;
+                        }
+                    }
+
+                    // Start byte located
+                    // Do I have required space left?
+                    
+
+                }
+
+                
+            }
+        }
+
         private void AddRow()
         {
 
             GridData.RowDefinitions.Add(new RowDefinition());
 
             // Newly added row
-            int lastrow = GridData.RowDefinitions.Count - 1;
-            int lastdatarow = lastrow - 1;
+            //int lastrow = GridData.RowDefinitions.Count - 1;
+            //int lastdatarow = lastrow - 1;
+
+            int lastdatarow = GridData.RowDefinitions.Count - 1;
 
             TextBlock address = new TextBlock();
             TextBox value = new TextBox();
@@ -214,19 +261,14 @@ namespace S7Lite
                 combo.Items.Add(type);
             }
 
+            combo.Name = "cmbtype_" + lastdatarow;
             combo.SelectionChanged += cmbtype_SelectionChanged;
-            combo.Name = "cmbtype_" + lastdatarow.ToString();
 
-            address.Name = "blcaddress_" + lastdatarow.ToString();
-            value.Name = "txtvalue_" + lastdatarow.ToString();
+            value.Name = "txtvalue_" + lastdatarow;
 
-            address.ApplyTemplate();
-
-            //combo.Style = Resources["DataTypeCombo"] as Style;
+            address.Name = "blcaddress_" + lastdatarow;
+            address.Text = lastdatarow.ToString();
             address.Style = Resources["Address"] as Style;
-
-            // Get button to last row
-            Grid.SetRow(btnAdd, lastrow);
 
             // New data row
             GridData.Children.Add(address);
@@ -237,8 +279,8 @@ namespace S7Lite
             Grid.SetRow(value, lastdatarow);
             Grid.SetRow(combo, lastdatarow);
 
-            Grid.SetColumn(address, 1);
-            Grid.SetColumn(combo, 0);
+            Grid.SetColumn(address, 0);
+            Grid.SetColumn(combo, 1);
             Grid.SetColumn(value, 2);
 
             int z = lastdatarow * (-1);
@@ -252,7 +294,7 @@ namespace S7Lite
             ComboBox actcombo = (ComboBox)sender;
 
             int selectedrow = Int32.Parse(actcombo.Name.Substring(actcombo.Name.IndexOf('_') + 1));
-            int lastdatarow = GridData.RowDefinitions.Count - 2;
+            int lastdatarow = GridData.RowDefinitions.Count - 1;
 
             if (selectedrow == lastdatarow)
             {
@@ -283,24 +325,19 @@ namespace S7Lite
             switch (actcombo.SelectedValue)
             {
                 case "BOOL":
-                    ActAddresBox.Text = "DB1." + "DBX" + actcombo.Tag.ToString();
+                case "BIT":
                     DB1FreeByte += 1;
                     break;
                 case "INT":
-                    ActAddresBox.Text = "DB1." + "DBW" + actcombo.Tag.ToString() ;
                     DB1FreeByte += 2;
                     break;
                 case "DINT":
-                    ActAddresBox.Text = "DB1." + "DBD" + actcombo.Tag.ToString();
                     DB1FreeByte += 4;
                     break;
                 case "REAL":
-                    ActAddresBox.Text = "DB1." + "DBD" + actcombo.Tag.ToString();
                     DB1FreeByte += 4;
                     break;
                 case "CHAR":
-                    ActAddresBox.Text = "DB1." + "DBB" + actcombo.Tag.ToString();
-                    DB1FreeByte += 1;
                     break;
             }
 

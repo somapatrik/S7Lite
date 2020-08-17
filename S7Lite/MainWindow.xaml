@@ -33,15 +33,10 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
+                <!--<Grid.RowDefinitions>
                     <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                
-                <Button Grid.Row="1" Grid.Column="0" Click="Button_Click" x:Name="btnAdd">Add</Button>
-                <Button Grid.Row="1" Grid.Column="2" x:Name="btnRemove" Click="Button_Click">Del</Button>
+                </Grid.RowDefinitions>-->
 
             </Grid>
         </ScrollViewer>
