@@ -210,10 +210,10 @@ namespace S7Lite
             {
                 return 0;
             }
-            else { 
-             
+            else {
+
                 // Start byte
-                int Start;
+                int Start = 0;
 
                 if (StartByte == -10)
                 {
@@ -230,14 +230,26 @@ namespace S7Lite
                             break;
                         }
                     }
-
-                    // Start byte located
-                    // Do I have required space left?
-                    
-
                 }
 
-                
+                // Start byte located
+                // Do I have required space left?
+                Boolean Found = false;
+                for (int i = Start; i < (Start + (NeedLength - 1)); i++)
+                {
+                    if (DB1UsedBytes.Contains(i))
+                    {
+                        Found = true;
+                        break;
+                    }
+                }
+
+                if (Found)
+                {
+                    GetLastFreeByte(Start + 1, NeedLength);
+                }
+
+                return Start;
             }
         }
 
