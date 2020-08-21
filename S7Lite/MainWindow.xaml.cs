@@ -20,21 +20,16 @@ using System.Runtime.CompilerServices;
 
 namespace S7Lite
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-
         S7Server server;
         Thread tserver;
 
         int DB1Size = 1024;
         List<int> DB1UsedBytes = new List<int>();
-        Boolean DB1OutOfSpace = false;
         byte[] DB1;
 
-        List<string> combotypes = new List<string> {"BIT","BYTE","WORD","DWORD","INT", "DINT", "REAL", "CHAR"};
+        List<string> combotypes = new List<string> {"BIT","BYTE","WORD", "INT", "DWORD", "DINT", "REAL", "CHAR"};
 
         // Thread server
         private Boolean _run;
@@ -110,6 +105,7 @@ namespace S7Lite
                         btn_connect.Content = "Stop";
                         ConsoleLog("Server started");
                         Logger.Log("Server started at " + cmb_ip.Text);
+                        GridData.IsEnabled = false;
                         run = true;
 
                         tserver = new Thread(() => { ServerWork(); });
@@ -181,6 +177,11 @@ namespace S7Lite
            Scroll.ScrollToBottom();
         }
 
+        /// <summary>
+        /// Hide/Show console log
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Label_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (RowLog.Height.Value == 0)
@@ -191,12 +192,6 @@ namespace S7Lite
                 RowLog.Height = new GridLength(0);
             }
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-           AddRow();
-        }
-
 
         /// <summary>
         /// Tests if there is required space in DB and returns start byte
@@ -235,7 +230,7 @@ namespace S7Lite
                 // Start byte located
                 // Do I have required space left?
                 Boolean Found = false;
-                for (int i = Start; i < (Start + (NeedLength - 1)); i++)
+                for (int i = Start; i <= (Start + (NeedLength - 1)); i++)
                 {
                     if (DB1UsedBytes.Contains(i))
                     {
@@ -246,7 +241,7 @@ namespace S7Lite
 
                 if (Found)
                 {
-                    GetLastFreeByte(Start + 1, NeedLength);
+                    GetLastFreeByte(NeedLength, Start + 1);
                 }
 
                 return Start;
@@ -260,6 +255,17 @@ namespace S7Lite
                 for (int i = StartByte; i <= (StartByte + (ByteLength-1)); i++)
                 {
                     DB1UsedBytes.Add(i);
+                }
+            }
+        }
+
+        private void DelUsedByte(int StartByte, int ByteLength)
+        {
+            if (DB1UsedBytes.Contains(StartByte))
+            {
+                for (int i = StartByte; i <= (StartByte + (ByteLength - 1)); i++)
+                {
+                    DB1UsedBytes.Remove(i);
                 }
             }
         }
@@ -287,7 +293,7 @@ namespace S7Lite
 
             // Address value
             address.Name = "blcaddress_" + lastdatarow;
-            address.Text = GetLastFreeByte().ToString();
+            //address.Text = GetLastFreeByte().ToString();
             address.Style = Resources["Address"] as Style;
 
             // Create new data row
@@ -353,10 +359,25 @@ namespace S7Lite
                     needspace = 4;
                     break;
             }
+            
+            int start = 0;
 
-            int start = GetLastFreeByte(needspace);
+            // If not last row remove used bytes first
+            if (selectedrow < lastdatarow)
+            {
+                int delstart = Int32.Parse(ActAddresBox.Text);
+                DelUsedByte(delstart, (Int32)ActAddresBox.Tag);
+                start = GetLastFreeByte(needspace, delstart);
+            } else
+            {
+                start = GetLastFreeByte(needspace);
+            }
+
+            
             AddUsedByte(start, needspace);
+
             ActAddresBox.Text = start.ToString();
+            ActAddresBox.Tag = needspace;
             
             if (selectedrow == lastdatarow)
             {
