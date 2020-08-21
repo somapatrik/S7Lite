@@ -30,7 +30,7 @@ namespace S7Lite
         Thread tserver;
 
         int DB1Size = 1024;
-        List<int> DB1UsedBytes;
+        List<int> DB1UsedBytes = new List<int>();
         Boolean DB1OutOfSpace = false;
         byte[] DB1;
 
@@ -203,7 +203,7 @@ namespace S7Lite
         /// </summary>
         /// <param name="NeedLength">How many bytes is needed</param>
         /// <returns></returns>
-        private int GetLastFreeByte(int StartByte = -10, int NeedLength = 1)
+        private int GetLastFreeByte(int NeedLength = 1, int StartByte = -10)
         {
 
             if (DB1UsedBytes.Count == 0)
@@ -253,15 +253,20 @@ namespace S7Lite
             }
         }
 
+        private void AddUsedByte(int StartByte, int ByteLength)
+        {
+            if (!DB1UsedBytes.Contains(StartByte))
+            {
+                for (int i = StartByte; i <= (StartByte + (ByteLength-1)); i++)
+                {
+                    DB1UsedBytes.Add(i);
+                }
+            }
+        }
+
         private void AddRow()
         {
-
             GridData.RowDefinitions.Add(new RowDefinition());
-
-            // Newly added row
-            //int lastrow = GridData.RowDefinitions.Count - 1;
-            //int lastdatarow = lastrow - 1;
-
             int lastdatarow = GridData.RowDefinitions.Count - 1;
 
             TextBlock address = new TextBlock();
@@ -273,16 +278,19 @@ namespace S7Lite
                 combo.Items.Add(type);
             }
 
+            // Data types
             combo.Name = "cmbtype_" + lastdatarow;
             combo.SelectionChanged += cmbtype_SelectionChanged;
 
+            // DB value
             value.Name = "txtvalue_" + lastdatarow;
 
+            // Address value
             address.Name = "blcaddress_" + lastdatarow;
-            address.Text = lastdatarow.ToString();
+            address.Text = GetLastFreeByte().ToString();
             address.Style = Resources["Address"] as Style;
 
-            // New data row
+            // Create new data row
             GridData.Children.Add(address);
             GridData.Children.Add(value);
             GridData.Children.Add(combo);
@@ -303,15 +311,11 @@ namespace S7Lite
 
         private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
             ComboBox actcombo = (ComboBox)sender;
 
             int selectedrow = Int32.Parse(actcombo.Name.Substring(actcombo.Name.IndexOf('_') + 1));
             int lastdatarow = GridData.RowDefinitions.Count - 1;
-
-            if (selectedrow == lastdatarow)
-            {
-                AddRow();
-            }
 
             TextBlock ActAddresBox = null;
 
@@ -332,28 +336,32 @@ namespace S7Lite
                 return;
             }
 
-            actcombo.Tag = DB1FreeByte;
-
+            int needspace = 0;
             switch (actcombo.SelectedValue)
             {
-                case "BOOL":
                 case "BIT":
-                    DB1FreeByte += 1;
+                case "BYTE":
+                    needspace = 1;
                     break;
                 case "INT":
-                    DB1FreeByte += 2;
+                case "WORD":
+                    needspace = 2;
                     break;
                 case "DINT":
-                    DB1FreeByte += 4;
-                    break;
+                case "DWORD":
                 case "REAL":
-                    DB1FreeByte += 4;
-                    break;
-                case "CHAR":
+                    needspace = 4;
                     break;
             }
 
-
+            int start = GetLastFreeByte(needspace);
+            AddUsedByte(start, needspace);
+            ActAddresBox.Text = start.ToString();
+            
+            if (selectedrow == lastdatarow)
+            {
+                AddRow();
+            }
 
         }
     }
