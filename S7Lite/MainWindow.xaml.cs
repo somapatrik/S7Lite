@@ -213,35 +213,35 @@ namespace S7Lite
                 if (StartByte == -10)
                 {
                     Start = DB1UsedBytes.Max() + 1;  // First avaiable byte
-                } 
+                }
                 else
                 {
-                    foreach(int Act in DB1UsedBytes)
+                    // Test every byte
+                    bool TestNext = false; 
+                    foreach (int ActByte in DB1UsedBytes)
                     {
-                        int Next = Act + 1;
-                        if (DB1UsedBytes.Contains(Next))
+                        
+                        // Test space after every byte
+                        for (int TestByte = ActByte + 1; TestByte <= (ActByte + NeedLength); TestByte++)
                         {
-                            Start = Next;
+                            if (DB1UsedBytes.Contains(TestByte))
+                            {
+                                TestNext = true;
+                                break;
+                            }
+                            TestNext = false;
+                        }
+                        if (!TestNext)
+                        {
+                            Start = ActByte + 1;
                             break;
                         }
                     }
                 }
 
-                // Start byte located
-                // Do I have required space left?
-                Boolean Found = false;
-                for (int i = Start; i <= (Start + (NeedLength - 1)); i++)
+                if ((Start + NeedLength) > (DB1Size))
                 {
-                    if (DB1UsedBytes.Contains(i))
-                    {
-                        Found = true;
-                        break;
-                    }
-                }
-
-                if (Found)
-                {
-                    GetLastFreeByte(NeedLength, Start + 1);
+                    return -1; // Out of db memory
                 }
 
                 return Start;
@@ -368,12 +368,13 @@ namespace S7Lite
                 int delstart = Int32.Parse(ActAddresBox.Text);
                 DelUsedByte(delstart, (Int32)ActAddresBox.Tag);
                 start = GetLastFreeByte(needspace, delstart);
-            } else
+            }
+            else
             {
                 start = GetLastFreeByte(needspace);
             }
 
-            
+
             AddUsedByte(start, needspace);
 
             ActAddresBox.Text = start.ToString();
