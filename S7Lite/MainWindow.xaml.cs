@@ -198,7 +198,7 @@ namespace S7Lite
         /// </summary>
         /// <param name="NeedLength">How many bytes is needed</param>
         /// <returns></returns>
-        private int GetLastFreeByte(int NeedLength = 1, int StartByte = -10)
+        private int GetLastFreeByte(int NeedLength = 1, bool FromMax = true)
         {
 
             if (DB1UsedBytes.Count == 0)
@@ -210,7 +210,7 @@ namespace S7Lite
                 // Start byte
                 int Start = 0;
 
-                if (StartByte == -10)
+                if (FromMax)
                 {
                     Start = DB1UsedBytes.Max() + 1;  // First avaiable byte
                 }
@@ -226,8 +226,8 @@ namespace S7Lite
                         {
                             if (DB1UsedBytes.Contains(TestByte))
                             {
-                                TestNext = true;
-                                break;
+                                TestNext = true; // There is not enough space  
+                                break;           // Try another byte in array
                             }
                             TestNext = false;
                         }
@@ -338,7 +338,7 @@ namespace S7Lite
 
             if (ActAddresBox == null)
             {
-                ConsoleLog("Could not find "+ "blcaddress_" + selectedrow.ToString());
+                ConsoleLog("Could not find " + "blcaddress_" + selectedrow.ToString());
                 return;
             }
 
@@ -359,19 +359,30 @@ namespace S7Lite
                     needspace = 4;
                     break;
             }
-            
+
             int start = 0;
 
             // If not last row remove used bytes first
-            if (selectedrow < lastdatarow)
+            //if (selectedrow < lastdatarow)
+            //{
+            //    int delstart = Int32.Parse(ActAddresBox.Text);
+            //    DelUsedByte(delstart, (Int32)ActAddresBox.Tag);
+            //    start = GetLastFreeByte(needspace, delstart);
+            //}
+            //else
+            //{
+            //    start = GetLastFreeByte(needspace);
+            //}
+
+            // New row vs edit row
+            if (ActAddresBox.Tag is null) 
+            {
+                start = GetLastFreeByte(needspace);
+            } else
             {
                 int delstart = Int32.Parse(ActAddresBox.Text);
                 DelUsedByte(delstart, (Int32)ActAddresBox.Tag);
-                start = GetLastFreeByte(needspace, delstart);
-            }
-            else
-            {
-                start = GetLastFreeByte(needspace);
+                start = GetLastFreeByte(needspace, false);
             }
 
 
