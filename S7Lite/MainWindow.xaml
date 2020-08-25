@@ -27,19 +27,21 @@
             <Button x:Name="btn_connect" Click="btn_connect_Click" FontSize="14" Padding="5" Content="Start"/>
         </StackPanel>
 
-        <ScrollViewer x:Name="ScrollData" Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <Grid x:Name="GridData" Grid.Row="1" VerticalAlignment="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
-                <!--<Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>-->
+        <StackPanel Grid.Row="1" Orientation="Vertical">
 
-            </Grid>
-        </ScrollViewer>
+            <TextBlock HorizontalAlignment="Right" Foreground="WhiteSmoke" Text="Used bytes"/>
+
+            <ScrollViewer x:Name="ScrollData" Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <Grid x:Name="GridData" Grid.Row="1" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                </Grid>
+            </ScrollViewer>
+
+        </StackPanel>
 
         <Grid Grid.Row="2">
             <Label Content="Log" FontSize="14" Foreground="White" 

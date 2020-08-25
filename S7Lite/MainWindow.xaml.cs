@@ -218,7 +218,8 @@ namespace S7Lite
                 {
                     // Test every byte
                     bool TestNext = false; 
-                    foreach (int ActByte in DB1UsedBytes)
+
+                    for (int ActByte = 0; ActByte < DB1Size;ActByte++)
                     {
                         
                         // Test space after every byte
@@ -250,24 +251,26 @@ namespace S7Lite
 
         private void AddUsedByte(int StartByte, int ByteLength)
         {
-            if (!DB1UsedBytes.Contains(StartByte))
+            for (int i = StartByte; i <= (StartByte + (ByteLength-1)); i++)
             {
-                for (int i = StartByte; i <= (StartByte + (ByteLength-1)); i++)
+                if (!DB1UsedBytes.Contains(StartByte))
                 {
                     DB1UsedBytes.Add(i);
                 }
             }
+            DB1UsedBytes.Sort();
         }
 
         private void DelUsedByte(int StartByte, int ByteLength)
         {
-            if (DB1UsedBytes.Contains(StartByte))
+            for (int i = StartByte; i <= (StartByte + (ByteLength - 1)); i++)
             {
-                for (int i = StartByte; i <= (StartByte + (ByteLength - 1)); i++)
+                if (DB1UsedBytes.Contains(i))
                 {
                     DB1UsedBytes.Remove(i);
                 }
             }
+            DB1UsedBytes.Sort();
         }
 
         private void AddRow()
@@ -293,7 +296,6 @@ namespace S7Lite
 
             // Address value
             address.Name = "blcaddress_" + lastdatarow;
-            //address.Text = GetLastFreeByte().ToString();
             address.Style = Resources["Address"] as Style;
 
             // Create new data row
@@ -362,18 +364,6 @@ namespace S7Lite
 
             int start = 0;
 
-            // If not last row remove used bytes first
-            //if (selectedrow < lastdatarow)
-            //{
-            //    int delstart = Int32.Parse(ActAddresBox.Text);
-            //    DelUsedByte(delstart, (Int32)ActAddresBox.Tag);
-            //    start = GetLastFreeByte(needspace, delstart);
-            //}
-            //else
-            //{
-            //    start = GetLastFreeByte(needspace);
-            //}
-
             // New row vs edit row
             if (ActAddresBox.Tag is null) 
             {
@@ -384,7 +374,6 @@ namespace S7Lite
                 DelUsedByte(delstart, (Int32)ActAddresBox.Tag);
                 start = GetLastFreeByte(needspace, false);
             }
-
 
             AddUsedByte(start, needspace);
 
