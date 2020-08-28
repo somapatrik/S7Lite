@@ -29,7 +29,7 @@ namespace S7Lite
         List<int> DB1UsedBytes = new List<int>();
         byte[] DB1;
 
-        List<string> combotypes = new List<string> {"BIT","BYTE","WORD", "INT", "DWORD", "DINT", "REAL", "CHAR"};
+        List<string> combotypes = new List<string> {"BIT","BYTE", "CHAR","WORD", "INT", "DWORD", "DINT", "REAL"};
 
         // Thread server
         private Boolean _run;
@@ -55,12 +55,18 @@ namespace S7Lite
         private void SetGui()
         {
             AddRow();
-            cmb_ip.Items.Clear();
             GetIp();
+            lblUsedBytes.Text = "0";
+        }
+
+        private void SetUsedBytes()
+        {
+            lblUsedBytes.Text = DB1UsedBytes.Count.ToString() + "/" + DB1Size;
         }
 
         private void GetIp()
         {
+            cmb_ip.Items.Clear();
             IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
             foreach (IPAddress ip in localIPs)
             {
@@ -105,7 +111,7 @@ namespace S7Lite
                         btn_connect.Content = "Stop";
                         ConsoleLog("Server started");
                         Logger.Log("Server started at " + cmb_ip.Text);
-                        GridData.IsEnabled = false;
+                        DisableCombos();
                         run = true;
 
                         tserver = new Thread(() => { ServerWork(); });
@@ -119,6 +125,7 @@ namespace S7Lite
                     ConsoleLog("Stopping server");
                     Logger.Log("Stopping server");
                     btn_connect.Content = "Start";
+                    EnableCombos();
                 }
 
             } catch (Exception ex)
@@ -143,7 +150,7 @@ namespace S7Lite
             }
             finally
             {
-                btn_connect.Dispatcher.Invoke(() => { btn_connect.Content = "Stop"; });
+                //btn_connect.Dispatcher.Invoke(() => { btn_connect.Content = "Stop"; });
 
                 Dispatcher.Invoke(() => { ConsoleLog("Server stopped"); });
                 Logger.Log("[" + MethodInfo.GetCurrentMethod().Name + "]" + " Server stopped");
@@ -251,26 +258,44 @@ namespace S7Lite
 
         private void AddUsedByte(int StartByte, int ByteLength)
         {
+            string log = "";
             for (int i = StartByte; i <= (StartByte + (ByteLength-1)); i++)
             {
-                if (!DB1UsedBytes.Contains(StartByte))
+                if (!DB1UsedBytes.Contains(i))
                 {
                     DB1UsedBytes.Add(i);
+                    log += i + " | ";
                 }
             }
+
+            if (!string.IsNullOrEmpty(log))
+            {
+                ConsoleLog("Using bytes: " + log);
+            }
+
             DB1UsedBytes.Sort();
+            SetUsedBytes();
         }
 
         private void DelUsedByte(int StartByte, int ByteLength)
         {
+            string log = "";
             for (int i = StartByte; i <= (StartByte + (ByteLength - 1)); i++)
             {
                 if (DB1UsedBytes.Contains(i))
                 {
                     DB1UsedBytes.Remove(i);
+                    log += i + " | ";
                 }
             }
+
+            if (!string.IsNullOrEmpty(log))
+            {
+                ConsoleLog("Removing bytes: " + log);
+            }
+
             DB1UsedBytes.Sort();
+            SetUsedBytes();
         }
 
         private void AddRow()
@@ -278,7 +303,8 @@ namespace S7Lite
             GridData.RowDefinitions.Add(new RowDefinition());
             int lastdatarow = GridData.RowDefinitions.Count - 1;
 
-            TextBlock address = new TextBlock();
+            //TextBlock address = new TextBlock();
+            TextBox address = new TextBox();
             TextBox value = new TextBox();
             ComboBox combo = new ComboBox();
 
@@ -297,6 +323,12 @@ namespace S7Lite
             // Address value
             address.Name = "blcaddress_" + lastdatarow;
             address.Style = Resources["Address"] as Style;
+            address.IsReadOnly = true;
+            address.Cursor = Cursors.Arrow;
+
+            address.MouseDoubleClick += Address_MouseDoubleClick;
+            address.LostFocus += Address_LostFocus;
+            address.KeyDown += Address_KeyDown;
 
             // Create new data row
             GridData.Children.Add(address);
@@ -317,6 +349,50 @@ namespace S7Lite
             ScrollData.ScrollToBottom();
         }
 
+        private void Address_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox address = (TextBox)sender;
+                if (!address.IsReadOnly)
+                {
+                    address.IsReadOnly = true;
+                }
+            }
+        }
+
+        private void Address_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox address = (TextBox)sender;
+            if (!address.IsReadOnly)
+            {
+                address.IsReadOnly = true;
+            }
+        }
+        
+        private void Address_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            TextBox address = (TextBox)sender;
+            address.Style = Resources["AddressEdit"] as Style;
+            address.IsReadOnly = false;
+        }
+
+        private void DisableCombos()
+        {
+            foreach (ComboBox child in GridData.Children.OfType<ComboBox>())
+            {
+                child.IsEnabled = false;
+            }
+        }
+
+        private void EnableCombos()
+        {
+            foreach (ComboBox child in GridData.Children.OfType<ComboBox>())
+            {
+                child.IsEnabled = true;
+            }
+        }
+
         private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -325,9 +401,9 @@ namespace S7Lite
             int selectedrow = Int32.Parse(actcombo.Name.Substring(actcombo.Name.IndexOf('_') + 1));
             int lastdatarow = GridData.RowDefinitions.Count - 1;
 
-            TextBlock ActAddresBox = null;
+            TextBox ActAddresBox = null;
 
-            foreach (TextBlock child in GridData.Children.OfType<TextBlock>())
+            foreach (TextBox child in GridData.Children.OfType<TextBox>())
             {
 
                 if (child.Name.ToString() == "blcaddress_" + selectedrow.ToString())
@@ -349,6 +425,7 @@ namespace S7Lite
             {
                 case "BIT":
                 case "BYTE":
+                case "CHAR":
                     needspace = 1;
                     break;
                 case "INT":
@@ -376,7 +453,6 @@ namespace S7Lite
             }
 
             AddUsedByte(start, needspace);
-
             ActAddresBox.Text = start.ToString();
             ActAddresBox.Tag = needspace;
             

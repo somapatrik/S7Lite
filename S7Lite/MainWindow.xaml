@@ -16,10 +16,11 @@
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"/>
-            <RowDefinition Height="9*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="4*" x:Name="RowLog"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
@@ -27,23 +28,26 @@
             <Button x:Name="btn_connect" Click="btn_connect_Click" FontSize="14" Padding="5" Content="Start"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Orientation="Vertical">
+        <DockPanel Grid.Row="1" Margin="5">
+            <TextBlock HorizontalAlignment="Left" Foreground="WhiteSmoke" Text="DB1"/>
+            <TextBlock x:Name="lblUsedBytes" HorizontalAlignment="Right" Foreground="WhiteSmoke" Text="Used bytes"/>
+        </DockPanel>
 
-            <TextBlock HorizontalAlignment="Right" Foreground="WhiteSmoke" Text="Used bytes"/>
 
-            <ScrollViewer x:Name="ScrollData" Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                <Grid x:Name="GridData" Grid.Row="1" VerticalAlignment="Top">
+        <ScrollViewer x:Name="ScrollData" Grid.Row="2" VerticalScrollBarVisibility="Auto" Height="auto">
+            <StackPanel Orientation="Vertical">
+                <Grid x:Name="GridData" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50px"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
                 </Grid>
-            </ScrollViewer>
+            </StackPanel>
+        </ScrollViewer>
 
-        </StackPanel>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <Label Content="Log" FontSize="14" Foreground="White" 
                    VerticalAlignment="Stretch" 
                    HorizontalAlignment="Stretch" 
@@ -55,12 +59,12 @@
             />
         </Grid>
 
-        <ScrollViewer Grid.Row="3" x:Name="Scroll" VerticalScrollBarVisibility="Auto" Height="auto" >
+        <ScrollViewer Grid.Row="4" x:Name="Scroll" VerticalScrollBarVisibility="Auto" Height="auto" >
             <TextBlock x:Name="LogConsole"  Background="#FF353028" Foreground="#FFAAAAAA" Padding="2" FontSize="12" TextWrapping="Wrap"/>
         </ScrollViewer>
 
         <!-- Last row -->
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="5">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
