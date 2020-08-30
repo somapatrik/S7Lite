@@ -353,28 +353,33 @@ namespace S7Lite
         {
             if (e.Key == Key.Enter)
             {
-                TextBox address = (TextBox)sender;
-                if (!address.IsReadOnly)
-                {
-                    address.IsReadOnly = true;
-                }
+                UnFocus(sender);
             }
         }
 
         private void Address_LostFocus(object sender, RoutedEventArgs e)
         {
-            TextBox address = (TextBox)sender;
-            if (!address.IsReadOnly)
-            {
-                address.IsReadOnly = true;
-            }
+            UnFocus(sender);            
         }
         
         private void Address_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             TextBox address = (TextBox)sender;
-            address.Style = Resources["AddressEdit"] as Style;
-            address.IsReadOnly = false;
+            if (address.Tag != null)
+            {
+                address.Style = Resources["AddressEdit"] as Style;
+                address.IsReadOnly = false;
+            }
+        }
+
+        private void UnFocus(object sender)
+        {
+            TextBox address = (TextBox)sender;
+            if (!address.IsReadOnly)
+            {
+                address.IsReadOnly = true;
+                address.Style = Resources["Address"] as Style;
+            }
         }
 
         private void DisableCombos()
