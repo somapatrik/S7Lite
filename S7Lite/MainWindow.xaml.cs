@@ -109,8 +109,7 @@ namespace S7Lite
                     if (StartServer())
                     {
                         btn_connect.Content = "Stop";
-                        ConsoleLog("Server started");
-                        Logger.Log("Server started at " + cmb_ip.Text);
+                        ConsoleLog("Server started at " + cmb_ip.Text);
                         DisableCombos();
                         run = true;
 
@@ -123,7 +122,6 @@ namespace S7Lite
                     run = false;
                     StopServer();
                     ConsoleLog("Stopping server");
-                    Logger.Log("Stopping server");
                     btn_connect.Content = "Start";
                     EnableCombos();
                 }
@@ -153,7 +151,7 @@ namespace S7Lite
                 //btn_connect.Dispatcher.Invoke(() => { btn_connect.Content = "Stop"; });
 
                 Dispatcher.Invoke(() => { ConsoleLog("Server stopped"); });
-                Logger.Log("[" + MethodInfo.GetCurrentMethod().Name + "]" + " Server stopped");
+                //Logger.Log("[" + MethodInfo.GetCurrentMethod().Name + "]" + " Server stopped");
             }
             
         }
@@ -180,24 +178,9 @@ namespace S7Lite
 
         public void ConsoleLog(string msg)
         {
-           LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
-           Scroll.ScrollToBottom();
-        }
-
-        /// <summary>
-        /// Hide/Show console log
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Label_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (RowLog.Height.Value == 0)
-            {
-                RowLog.Height = new GridLength(4, GridUnitType.Star);
-            } else
-            {
-                RowLog.Height = new GridLength(0);
-            }
+            //Logger.Log(msg, Logger.LogState.Normal);
+            LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
+            Scroll.ScrollToBottom();
         }
 
         /// <summary>
@@ -256,6 +239,8 @@ namespace S7Lite
             }
         }
 
+        #region Add/Del bytes
+
         private void AddUsedByte(int StartByte, int ByteLength)
         {
             string log = "";
@@ -271,6 +256,7 @@ namespace S7Lite
             if (!string.IsNullOrEmpty(log))
             {
                 ConsoleLog("Using bytes: " + log);
+                Logger.Log("Using bytes: " + log);
             }
 
             DB1UsedBytes.Sort();
@@ -292,61 +278,27 @@ namespace S7Lite
             if (!string.IsNullOrEmpty(log))
             {
                 ConsoleLog("Removing bytes: " + log);
+                Logger.Log("Removing bytes: " + log);
             }
 
             DB1UsedBytes.Sort();
             SetUsedBytes();
         }
 
-        private void AddRow()
+        #endregion
+
+        #region Click events
+
+        private void Label_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            GridData.RowDefinitions.Add(new RowDefinition());
-            int lastdatarow = GridData.RowDefinitions.Count - 1;
-
-            //TextBlock address = new TextBlock();
-            TextBox address = new TextBox();
-            TextBox value = new TextBox();
-            ComboBox combo = new ComboBox();
-
-            foreach(string type in combotypes)
+            if (RowLog.Height.Value == 0)
             {
-                combo.Items.Add(type);
+                RowLog.Height = new GridLength(4, GridUnitType.Star);
             }
-
-            // Data types
-            combo.Name = "cmbtype_" + lastdatarow;
-            combo.SelectionChanged += cmbtype_SelectionChanged;
-
-            // DB value
-            value.Name = "txtvalue_" + lastdatarow;
-
-            // Address value
-            address.Name = "blcaddress_" + lastdatarow;
-            address.Style = Resources["Address"] as Style;
-            address.IsReadOnly = true;
-            address.Cursor = Cursors.Arrow;
-
-            address.MouseDoubleClick += Address_MouseDoubleClick;
-            address.LostFocus += Address_LostFocus;
-            address.KeyDown += Address_KeyDown;
-
-            // Create new data row
-            GridData.Children.Add(address);
-            GridData.Children.Add(value);
-            GridData.Children.Add(combo);
-
-            Grid.SetRow(address, lastdatarow);
-            Grid.SetRow(value, lastdatarow);
-            Grid.SetRow(combo, lastdatarow);
-
-            Grid.SetColumn(address, 0);
-            Grid.SetColumn(combo, 1);
-            Grid.SetColumn(value, 2);
-
-            int z = lastdatarow * (-1);
-            Grid.SetZIndex(combo, z);
-
-            ScrollData.ScrollToBottom();
+            else
+            {
+                RowLog.Height = new GridLength(0);
+            }
         }
 
         private void Address_KeyDown(object sender, KeyEventArgs e)
@@ -387,6 +339,8 @@ namespace S7Lite
             }
         }
 
+        #endregion
+
         #region Enable/Disable combos
 
         private void DisableCombos()
@@ -407,6 +361,8 @@ namespace S7Lite
 
         #endregion
 
+        #region Get GUI objects
+        
         private ComboBox GetComboBox(string name)
         {
             ComboBox ActComboBox = null;
@@ -453,6 +409,59 @@ namespace S7Lite
             return ActAddresBox;
         }
 
+        #endregion
+
+        private void AddRow()
+        {
+            GridData.RowDefinitions.Add(new RowDefinition());
+            int lastdatarow = GridData.RowDefinitions.Count - 1;
+
+            //TextBlock address = new TextBlock();
+            TextBox address = new TextBox();
+            TextBox value = new TextBox();
+            ComboBox combo = new ComboBox();
+
+            foreach (string type in combotypes)
+            {
+                combo.Items.Add(type);
+            }
+
+            // Data types
+            combo.Name = "cmbtype_" + lastdatarow;
+            combo.SelectionChanged += cmbtype_SelectionChanged;
+
+            // DB value
+            value.Name = "txtvalue_" + lastdatarow;
+
+            // Address value
+            address.Name = "blcaddress_" + lastdatarow;
+            address.Style = Resources["Address"] as Style;
+            address.IsReadOnly = true;
+            address.Cursor = Cursors.Arrow;
+
+            address.MouseDoubleClick += Address_MouseDoubleClick;
+            address.LostFocus += Address_LostFocus;
+            address.KeyDown += Address_KeyDown;
+
+            // Create new data row
+            GridData.Children.Add(address);
+            GridData.Children.Add(value);
+            GridData.Children.Add(combo);
+
+            Grid.SetRow(address, lastdatarow);
+            Grid.SetRow(value, lastdatarow);
+            Grid.SetRow(combo, lastdatarow);
+
+            Grid.SetColumn(address, 0);
+            Grid.SetColumn(combo, 1);
+            Grid.SetColumn(value, 2);
+
+            int z = lastdatarow * (-1);
+            Grid.SetZIndex(combo, z);
+
+            ScrollData.ScrollToBottom();
+        }
+
         private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -486,6 +495,11 @@ namespace S7Lite
                     needspace = 4;
                     break;
             }
+
+            StringBuilder log = new StringBuilder();
+            log.Append("Type: " + actcombo.SelectedValue + " ");
+            log.Append("Bytes: " + needspace + " ");
+
 
             int start = 0;
 
