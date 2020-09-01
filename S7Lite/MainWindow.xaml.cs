@@ -205,7 +205,7 @@ namespace S7Lite
         /// </summary>
         /// <param name="NeedLength">How many bytes is needed</param>
         /// <returns></returns>
-        private int GetLastFreeByte(int NeedLength = 1, bool FromMax = true)
+        private int GetLastFreeByte(int NeedLength = 1, bool FromMax = true, int StartFrom = 0)
         {
 
             if (DB1UsedBytes.Count == 0)
@@ -223,14 +223,13 @@ namespace S7Lite
                 }
                 else
                 {
-                    // Test every byte
+                   // Test every byte from start value
                     bool TestNext = false; 
 
-                    for (int ActByte = 0; ActByte < DB1Size;ActByte++)
+                    for (int ActByte = StartFrom; ActByte < DB1Size;ActByte++)
                     {
-                        
                         // Test space after every byte
-                        for (int TestByte = ActByte + 1; TestByte <= (ActByte + NeedLength); TestByte++)
+                        for (int TestByte = ActByte; TestByte < (ActByte + NeedLength); TestByte++)
                         {
                             if (DB1UsedBytes.Contains(TestByte))
                             {
@@ -239,9 +238,10 @@ namespace S7Lite
                             }
                             TestNext = false;
                         }
+                        // Test finished = TextNext = false
                         if (!TestNext)
                         {
-                            Start = ActByte + 1;
+                            Start = ActByte;
                             break;
                         }
                     }
@@ -379,8 +379,15 @@ namespace S7Lite
             {
                 address.IsReadOnly = true;
                 address.Style = Resources["Address"] as Style;
+
+                //address.Tag = address.Text;
+                ComboBox comb = GetComboBox(address.Name.Split('_')[1]);
+                this.cmbtype_SelectionChanged(comb, null);
+
             }
         }
+
+        #region Enable/Disable combos
 
         private void DisableCombos()
         {
@@ -398,20 +405,39 @@ namespace S7Lite
             }
         }
 
-        private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        #endregion
+
+        private ComboBox GetComboBox(string name)
         {
+            ComboBox ActComboBox = null;
 
-            ComboBox actcombo = (ComboBox)sender;
+            foreach (ComboBox child in GridData.Children.OfType<ComboBox>())
+            {
 
-            int selectedrow = Int32.Parse(actcombo.Name.Substring(actcombo.Name.IndexOf('_') + 1));
-            int lastdatarow = GridData.RowDefinitions.Count - 1;
+                if (child.Name.ToString() == "cmbtype_" + name)
+                {
+                    ActComboBox = child;
+                    break;
+                }
 
+            }
+
+            if (ActComboBox == null)
+            {
+                ConsoleLog("Could not find " + "cmbtype_" + name);
+            }
+
+            return ActComboBox;
+        }
+
+        private TextBox GetTextBox(string name)
+        {
             TextBox ActAddresBox = null;
 
             foreach (TextBox child in GridData.Children.OfType<TextBox>())
             {
 
-                if (child.Name.ToString() == "blcaddress_" + selectedrow.ToString())
+                if (child.Name.ToString() == "blcaddress_" + name)
                 {
                     ActAddresBox = child;
                     break;
@@ -421,7 +447,24 @@ namespace S7Lite
 
             if (ActAddresBox == null)
             {
-                ConsoleLog("Could not find " + "blcaddress_" + selectedrow.ToString());
+                ConsoleLog("Could not find " + "blcaddress_" + name);
+            }
+
+            return ActAddresBox;
+        }
+
+        private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            ComboBox actcombo = (ComboBox)sender;
+
+            int selectedrow = Int32.Parse(actcombo.Name.Substring(actcombo.Name.IndexOf('_') + 1));
+            int lastdatarow = GridData.RowDefinitions.Count - 1;
+
+            TextBox ActAddresBox = GetTextBox(selectedrow.ToString());
+
+            if (ActAddresBox == null)
+            {
                 return;
             }
 
@@ -447,19 +490,28 @@ namespace S7Lite
             int start = 0;
 
             // New row vs edit row
-            if (ActAddresBox.Tag is null) 
+            if (actcombo.Tag is null) 
             {
                 start = GetLastFreeByte(needspace);
             } else
             {
-                int delstart = Int32.Parse(ActAddresBox.Text);
-                DelUsedByte(delstart, (Int32)ActAddresBox.Tag);
-                start = GetLastFreeByte(needspace, false);
+                int delstart = Int32.Parse(ActAddresBox.Tag.ToString());
+                DelUsedByte(delstart, Int32.Parse(actcombo.Tag.ToString()));
+
+                if (ActAddresBox.Text != ActAddresBox.Tag.ToString())
+                {
+                    start = GetLastFreeByte(needspace, false, Int32.Parse(ActAddresBox.Text));
+                } else
+                {
+                    start = GetLastFreeByte(needspace, false);
+                }
+
             }
 
             AddUsedByte(start, needspace);
             ActAddresBox.Text = start.ToString();
-            ActAddresBox.Tag = needspace;
+            ActAddresBox.Tag = ActAddresBox.Text;
+            actcombo.Tag = needspace;
             
             if (selectedrow == lastdatarow)
             {
