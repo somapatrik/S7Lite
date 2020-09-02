@@ -329,13 +329,29 @@ namespace S7Lite
             TextBox address = (TextBox)sender;
             if (!address.IsReadOnly)
             {
-                address.IsReadOnly = true;
-                address.Style = Resources["Address"] as Style;
 
-                //address.Tag = address.Text;
-                ComboBox comb = GetComboBox(address.Name.Split('_')[1]);
-                this.cmbtype_SelectionChanged(comb, null);
+                // Check curently entered address value
+                int newvalue;
+                bool IsParsed = Int32.TryParse(address.Text, out newvalue);
 
+                if (IsParsed & (newvalue >= 0 && newvalue < DB1Size))
+                {
+                    address.IsReadOnly = true;
+                    address.Style = Resources["Address"] as Style;
+
+                    //address.Tag = address.Text;
+                    ComboBox comb = GetComboBox(address.Name.Split('_')[1]);
+                    this.cmbtype_SelectionChanged(comb, null);
+                } 
+                else
+                {
+                    ConsoleLog("Error: Entered value is not correct");
+
+                    if (!IsParsed)
+                        Logger.Log(address.Name + " value: " + address.Text + " is not a number");
+                    else
+                        Logger.Log(address.Name + " value: " + address.Text + " is out of range");
+                }
             }
         }
 
@@ -460,6 +476,8 @@ namespace S7Lite
             Grid.SetZIndex(combo, z);
 
             ScrollData.ScrollToBottom();
+
+            Logger.Log("Add new line #" + lastdatarow);
         }
 
         private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -496,9 +514,7 @@ namespace S7Lite
                     break;
             }
 
-            StringBuilder log = new StringBuilder();
-            log.Append("Type: " + actcombo.SelectedValue + " ");
-            log.Append("Bytes: " + needspace + " ");
+            string log = "Type: " + actcombo.SelectedValue + " Bytes: " + needspace + " ";
 
 
             int start = 0;
@@ -507,6 +523,7 @@ namespace S7Lite
             if (actcombo.Tag is null) 
             {
                 start = GetLastFreeByte(needspace);
+                log += "Action: new line";
             } else
             {
                 int delstart = Int32.Parse(ActAddresBox.Tag.ToString());
@@ -515,12 +532,16 @@ namespace S7Lite
                 if (ActAddresBox.Text != ActAddresBox.Tag.ToString())
                 {
                     start = GetLastFreeByte(needspace, false, Int32.Parse(ActAddresBox.Text));
+                    log += "Action: edit address";
                 } else
                 {
                     start = GetLastFreeByte(needspace, false);
+                    log += "Action: edit data type";
                 }
 
             }
+
+            Logger.Log(log, Logger.LogState.Normal);
 
             AddUsedByte(start, needspace);
             ActAddresBox.Text = start.ToString();
