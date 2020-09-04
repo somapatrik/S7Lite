@@ -33,7 +33,6 @@
             <TextBlock x:Name="lblUsedBytes" HorizontalAlignment="Right" Foreground="WhiteSmoke" Text="Used bytes"/>
         </DockPanel>
 
-
         <ScrollViewer x:Name="ScrollData" Grid.Row="2" VerticalScrollBarVisibility="Auto" Height="auto">
             <StackPanel Orientation="Vertical">
                 <Grid x:Name="GridData" VerticalAlignment="Top">
@@ -45,7 +44,6 @@
                 </Grid>
             </StackPanel>
         </ScrollViewer>
-
 
         <Grid Grid.Row="3">
             <Label Content="Log" FontSize="14" Foreground="White" 

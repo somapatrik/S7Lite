@@ -102,20 +102,24 @@ namespace S7Lite
 
         private void btn_connect_Click(object sender, RoutedEventArgs e)
         {
-            try { 
+            try {
+
+                CheckFinalDb();
 
                 if (!run)
                 {
                     if (StartServer())
                     {
                         btn_connect.Content = "Stop";
-                        ConsoleLog("Server started at " + cmb_ip.Text);
+                        
                         DisableCombos();
-                        run = true;
-
+             
                         tserver = new Thread(() => { ServerWork(); });
                         tserver.Name = "S7Server";
                         tserver.Start();
+
+                        run = true;
+                        ConsoleLog("Server started at " + cmb_ip.Text);
                     }
                 } else
                 {
@@ -128,8 +132,13 @@ namespace S7Lite
 
             } catch (Exception ex)
             {
-                Logger.Log("[" + MethodBase.GetCurrentMethod().Name + "]" + ex.Message);
+                Logger.Log("[" + MethodBase.GetCurrentMethod().Name + "]" + ex.Message, Logger.LogState.Error);
             }
+        }
+
+        private void CheckFinalDb()
+        {
+
         }
 
         private void ServerWork()
@@ -178,7 +187,6 @@ namespace S7Lite
 
         public void ConsoleLog(string msg)
         {
-            //Logger.Log(msg, Logger.LogState.Normal);
             LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
             Scroll.ScrollToBottom();
         }
@@ -434,7 +442,7 @@ namespace S7Lite
 
             //TextBlock address = new TextBlock();
             TextBox address = new TextBox();
-            TextBox value = new TextBox();
+          //  TextBox value = new TextBox();
             ComboBox combo = new ComboBox();
 
             foreach (string type in combotypes)
@@ -444,10 +452,11 @@ namespace S7Lite
 
             // Data types
             combo.Name = "cmbtype_" + lastdatarow;
+            combo.Style = Resources["DataType"] as Style;
             combo.SelectionChanged += cmbtype_SelectionChanged;
 
             // DB value
-            value.Name = "txtvalue_" + lastdatarow;
+            // value.Name = "txtvalue_" + lastdatarow;
 
             // Address value
             address.Name = "blcaddress_" + lastdatarow;
@@ -461,16 +470,16 @@ namespace S7Lite
 
             // Create new data row
             GridData.Children.Add(address);
-            GridData.Children.Add(value);
+         //   GridData.Children.Add(value);
             GridData.Children.Add(combo);
 
             Grid.SetRow(address, lastdatarow);
-            Grid.SetRow(value, lastdatarow);
+    //        Grid.SetRow(value, lastdatarow);
             Grid.SetRow(combo, lastdatarow);
 
             Grid.SetColumn(address, 0);
             Grid.SetColumn(combo, 1);
-            Grid.SetColumn(value, 2);
+       //     Grid.SetColumn(value, 2);
 
             int z = lastdatarow * (-1);
             Grid.SetZIndex(combo, z);
@@ -514,9 +523,7 @@ namespace S7Lite
                     break;
             }
 
-            string log = "Type: " + actcombo.SelectedValue + " Bytes: " + needspace + " ";
-
-
+            string log = "";
             int start = 0;
 
             // New row vs edit row
@@ -527,7 +534,8 @@ namespace S7Lite
             } else
             {
                 int delstart = Int32.Parse(ActAddresBox.Tag.ToString());
-                DelUsedByte(delstart, Int32.Parse(actcombo.Tag.ToString()));
+                int dellen = Int32.Parse(actcombo.Tag.ToString());
+                DelUsedByte(delstart, dellen);
 
                 if (ActAddresBox.Text != ActAddresBox.Tag.ToString())
                 {
@@ -540,7 +548,7 @@ namespace S7Lite
                 }
 
             }
-
+            log += " Type: " + actcombo.SelectedValue + " Bytes: " + needspace + " ";
             Logger.Log(log, Logger.LogState.Normal);
 
             AddUsedByte(start, needspace);
