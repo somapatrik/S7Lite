@@ -69,7 +69,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Column="0" Foreground="WhiteSmoke" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Version"/>
+            <Label x:Name="lbl_Version" Grid.Column="0" Foreground="WhiteSmoke" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Version"/>
             <Label Grid.Column="1" Foreground="WhiteSmoke" VerticalAlignment="Center" HorizontalAlignment="Center" Content="CPU 315-2 PN/DP"/>
 
         </Grid>

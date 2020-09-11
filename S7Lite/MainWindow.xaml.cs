@@ -45,6 +45,7 @@ namespace S7Lite
         public MainWindow()
         {
             InitializeComponent();
+
             Logger.Log("[ -- APP START -- ]");
 
             DB1 = new byte[DB1Size];
@@ -57,6 +58,7 @@ namespace S7Lite
             AddRow();
             GetIp();
             lblUsedBytes.Text = "0";
+            lbl_Version.Content = "v0.0";
         }
 
         private void SetUsedBytes()
@@ -404,13 +406,59 @@ namespace S7Lite
 
             if (ActComboBox == null)
             {
-                ConsoleLog("Could not find " + "cmbtype_" + name);
+                Logger.Log("Could not find " + "cmbtype_" + name, Logger.LogState.Warning);
             }
 
             return ActComboBox;
         }
 
-        private TextBox GetTextBox(string name)
+        private Label GetBitValueBox(string name)
+        {
+            Label ActBitBox = null;
+
+            foreach (Label child in GridData.Children.OfType<Label>())
+            {
+
+                if (child.Name.ToString() == "bitvalue_" + name)
+                {
+                    ActBitBox = child;
+                    break;
+                }
+
+            }
+
+            if (ActBitBox == null)
+            {
+                Logger.Log("Could not find " + "bitvalue_" + name, Logger.LogState.Warning);
+            }
+
+            return ActBitBox;
+        }
+
+        private TextBox GetValueTextBox(string name)
+        {
+            TextBox ActAddresBox = null;
+
+            foreach (TextBox child in GridData.Children.OfType<TextBox>())
+            {
+
+                if (child.Name.ToString() == "txtvalue_" + name)
+                {
+                    ActAddresBox = child;
+                    break;
+                }
+
+            }
+
+            if (ActAddresBox == null)
+            {
+                Logger.Log("Could not find " + "txtvalue_" + name, Logger.LogState.Warning);
+            }
+
+            return ActAddresBox;
+        }
+
+        private TextBox GetAddressTextBox(string name)
         {
             TextBox ActAddresBox = null;
 
@@ -427,7 +475,7 @@ namespace S7Lite
 
             if (ActAddresBox == null)
             {
-                ConsoleLog("Could not find " + "blcaddress_" + name);
+                Logger.Log("Could not find " + "blcaddress_" + name, Logger.LogState.Warning);
             }
 
             return ActAddresBox;
@@ -442,7 +490,7 @@ namespace S7Lite
 
             //TextBlock address = new TextBlock();
             TextBox address = new TextBox();
-          //  TextBox value = new TextBox();
+            TextBox value = new TextBox();
             ComboBox combo = new ComboBox();
 
             foreach (string type in combotypes)
@@ -456,7 +504,7 @@ namespace S7Lite
             combo.SelectionChanged += cmbtype_SelectionChanged;
 
             // DB value
-            // value.Name = "txtvalue_" + lastdatarow;
+            value.Name = "txtvalue_" + lastdatarow;
 
             // Address value
             address.Name = "blcaddress_" + lastdatarow;
@@ -470,16 +518,16 @@ namespace S7Lite
 
             // Create new data row
             GridData.Children.Add(address);
-         //   GridData.Children.Add(value);
+            GridData.Children.Add(value);
             GridData.Children.Add(combo);
 
             Grid.SetRow(address, lastdatarow);
-    //        Grid.SetRow(value, lastdatarow);
+            Grid.SetRow(value, lastdatarow);
             Grid.SetRow(combo, lastdatarow);
 
             Grid.SetColumn(address, 0);
             Grid.SetColumn(combo, 1);
-       //     Grid.SetColumn(value, 2);
+            Grid.SetColumn(value, 2);
 
             int z = lastdatarow * (-1);
             Grid.SetZIndex(combo, z);
@@ -497,7 +545,7 @@ namespace S7Lite
             int selectedrow = Int32.Parse(actcombo.Name.Substring(actcombo.Name.IndexOf('_') + 1));
             int lastdatarow = GridData.RowDefinitions.Count - 1;
 
-            TextBox ActAddresBox = GetTextBox(selectedrow.ToString());
+            TextBox ActAddresBox = GetAddressTextBox(selectedrow.ToString());
 
             if (ActAddresBox == null)
             {
@@ -555,10 +603,66 @@ namespace S7Lite
             ActAddresBox.Text = start.ToString();
             ActAddresBox.Tag = ActAddresBox.Text;
             actcombo.Tag = needspace;
-            
+
+            ChangeValueBox(selectedrow, actcombo.SelectedValue.ToString());
+
             if (selectedrow == lastdatarow)
             {
                 AddRow();
+            }
+        }
+
+        private void ChangeValueBox(int selectedrow, string type)
+        {
+            // Check if textbox value exists
+            TextBox valuebox = GetValueTextBox(selectedrow.ToString());
+            bool IsTextBox = valuebox != null ? true : false;
+
+            // Check if bit value exists
+            Label bitbox = GetBitValueBox(selectedrow.ToString());
+            bool IsBitValue = bitbox != null ? true : false;
+
+            if (type == "BIT")
+            {
+                if (IsTextBox | !IsBitValue)
+                {
+                    //Remove text box
+                    GridData.Children.RemoveAt(GridData.Children.IndexOf(valuebox));
+
+                    // Add bit panel
+                    StackPanel stack = new StackPanel();
+                    stack.Orientation = Orientation.Horizontal;
+
+                    stack.Name = "stack_" + selectedrow;
+
+                    for (int b = 0; b < 8; b++)
+                    {
+                        Label bit = new Label();
+                        bit.Content = b.ToString();
+                        bit.Name = "bitvalue_" + selectedrow + "_" + b.ToString();
+                        stack.Children.Add(bit);
+                    }
+
+                    GridData.Children.Add(stack);
+                    Grid.SetRow(stack, selectedrow);
+                    Grid.SetColumn(stack, 2);
+                }
+            }
+            else
+            {
+                if (IsBitValue | !IsTextBox)
+                {
+                    // RemoveBit
+
+
+                    // Add textbox
+                    TextBox newbox = new TextBox();
+                    newbox.Name = "txtvalue_" + selectedrow;
+                    GridData.Children.Add(newbox);
+                    Grid.SetRow(newbox, selectedrow);
+                    Grid.SetColumn(newbox, 2);
+
+                }
             }
 
         }
