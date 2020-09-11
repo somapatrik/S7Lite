@@ -27,14 +27,17 @@ namespace S7Lite
                 switch (msgstate)
                 {
                     case LogState.Error:
-                        state = " [ERROR]";
+                        state = "[  ERROR  ]";
                         break;
                     case LogState.Warning:
-                        state = " [WARNING]";
+                        state = "[ WARNING ]";
+                        break;
+                    default:
+                        state = "[         ]";
                         break;
                 }
                  
-                string msgline = "[" + DateTime.Now.ToString("HH:mm:ss") + "] " + state + " " + msg;
+                string msgline = DateTime.Now.ToString("HH:mm:ss") + " " + state + " " + msg;
 
                 File.AppendAllText(Path.Combine("Log",DateTime.Now.ToString("yyMMdd")) + ".txt", msgline + Environment.NewLine);
             }
