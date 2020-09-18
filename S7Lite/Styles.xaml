@@ -3,6 +3,7 @@
                     xmlns:local="clr-namespace:S7Lite"
                     xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
 
+    
     <Style x:Key="PanelButton" TargetType="Label">
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -28,6 +29,18 @@
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
 
-    
+    <Style x:Key="bitlabel" TargetType="Label">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderThickness" Value=".5"/>
+        <Setter Property="BorderBrush" Value="white"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
 
+    <Style x:Key="bitstack" TargetType="DockPanel">
+        <Setter Property="Background" Value="#FF274968"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    
+    
+    
 </ResourceDictionary>

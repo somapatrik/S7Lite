@@ -630,16 +630,18 @@ namespace S7Lite
                     GridData.Children.RemoveAt(GridData.Children.IndexOf(valuebox));
 
                     // Add bit panel
-                    StackPanel stack = new StackPanel();
-                    stack.Orientation = Orientation.Horizontal;
+                    DockPanel stack = new DockPanel();
+                    //stack   Orientation.Horizontal;
 
                     stack.Name = "stack_" + selectedrow;
+                    stack.Style = Resources["bitstack"] as Style;
 
                     for (int b = 0; b < 8; b++)
                     {
                         Label bit = new Label();
                         bit.Content = b.ToString();
                         bit.Name = "bitvalue_" + selectedrow + "_" + b.ToString();
+                        bit.Style = Resources["bitlabel"] as Style;
                         stack.Children.Add(bit);
                     }
 
