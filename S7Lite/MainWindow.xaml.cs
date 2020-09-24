@@ -115,6 +115,7 @@ namespace S7Lite
                         btn_connect.Content = "Stop";
                         
                         DisableCombos();
+                        DisableAddresses();
              
                         tserver = new Thread(() => { ServerWork(); });
                         tserver.Name = "S7Server";
@@ -130,6 +131,7 @@ namespace S7Lite
                     ConsoleLog("Stopping server");
                     btn_connect.Content = "Start";
                     EnableCombos();
+                    EnableAddresses();
                 }
 
             } catch (Exception ex)
@@ -193,11 +195,6 @@ namespace S7Lite
             Scroll.ScrollToBottom();
         }
 
-        /// <summary>
-        /// Tests if there is required space in DB and returns start byte
-        /// </summary>
-        /// <param name="NeedLength">How many bytes is needed</param>
-        /// <returns></returns>
         private int GetLastFreeByte(int NeedLength = 1, bool FromMax = true, int StartFrom = 0)
         {
 
@@ -385,10 +382,34 @@ namespace S7Lite
             }
         }
 
+        private void DisableAddresses()
+        {
+            foreach (TextBox child in GridData.Children.OfType<TextBox>())
+            {
+                if (child.Name.StartsWith("blcaddress_"))
+                {
+                    child.IsEnabled = false;
+                }
+                
+            }
+        }
+
+        private void EnableAddresses()
+        {
+            foreach (TextBox child in GridData.Children.OfType<TextBox>())
+            {
+                if (child.Name.StartsWith("blcaddress_"))
+                {
+                    child.IsEnabled = true;
+                }
+
+            }
+        }
+
         #endregion
 
         #region Get GUI objects
-        
+
         private ComboBox GetComboBox(string name)
         {
             ComboBox ActComboBox = null;
@@ -412,14 +433,14 @@ namespace S7Lite
             return ActComboBox;
         }
 
-        private Label GetBitValueBox(string name)
+        private Grid GetBitValueBox(string name)
         {
-            Label ActBitBox = null;
+            Grid ActBitBox = null;
 
-            foreach (Label child in GridData.Children.OfType<Label>())
+            foreach (Grid child in GridData.Children.OfType<Grid>())
             {
 
-                if (child.Name.ToString() == "bitvalue_" + name)
+                if (child.Name.ToString() == "bitgrid_" + name)
                 {
                     ActBitBox = child;
                     break;
@@ -429,7 +450,7 @@ namespace S7Lite
 
             if (ActBitBox == null)
             {
-                Logger.Log("Could not find " + "bitvalue_" + name, Logger.LogState.Warning);
+                Logger.Log("Could not find " + "bitgrid_" + name, Logger.LogState.Warning);
             }
 
             return ActBitBox;
@@ -619,7 +640,7 @@ namespace S7Lite
             bool IsTextBox = valuebox != null ? true : false;
 
             // Check if bit value exists
-            Label bitbox = GetBitValueBox(selectedrow.ToString());
+            Grid bitbox = GetBitValueBox(selectedrow.ToString());
             bool IsBitValue = bitbox != null ? true : false;
 
             if (type == "BIT")
@@ -662,7 +683,7 @@ namespace S7Lite
                 if (IsBitValue | !IsTextBox)
                 {
                     // RemoveBit
-
+                    GridData.Children.Remove(bitbox);
 
                     // Add textbox
                     TextBox newbox = new TextBox();
