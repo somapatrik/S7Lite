@@ -106,8 +106,6 @@ namespace S7Lite
         {
             try {
 
-                CheckFinalDb();
-
                 if (!run)
                 {
                     if (StartServer())
@@ -138,11 +136,6 @@ namespace S7Lite
             {
                 Logger.Log("[" + MethodBase.GetCurrentMethod().Name + "]" + ex.Message, Logger.LogState.Error);
             }
-        }
-
-        private void CheckFinalDb()
-        {
-
         }
 
         private void ServerWork()
@@ -595,23 +588,31 @@ namespace S7Lite
             string log = "";
             int start = 0;
 
-            // New row vs edit row
-            if (actcombo.Tag is null) 
+            // Test new/edit
+            if (actcombo.Tag is null)
             {
                 start = GetLastFreeByte(needspace);
                 log += "Action: new line";
             } else
             {
+                // From what byte will delete
                 int delstart = Int32.Parse(ActAddresBox.Tag.ToString());
+
+                // How many bytes will be deleted
                 int dellen = Int32.Parse(actcombo.Tag.ToString());
+                
+                // Delete unused bytes
                 DelUsedByte(delstart, dellen);
 
+                // Address text != Adrress tag => address changed
                 if (ActAddresBox.Text != ActAddresBox.Tag.ToString())
                 {
+                    // From what byte I have free adrress?
                     start = GetLastFreeByte(needspace, false, Int32.Parse(ActAddresBox.Text));
                     log += "Action: edit address";
                 } else
                 {
+                    // Data type change will continute from max free byte
                     start = GetLastFreeByte(needspace, false);
                     log += "Action: edit data type";
                 }
@@ -620,11 +621,18 @@ namespace S7Lite
             log += " Type: " + actcombo.SelectedValue + " Bytes: " + needspace + " ";
             Logger.Log(log, Logger.LogState.Normal);
 
-            AddUsedByte(start, needspace);
+            AddUsedByte(start, needspace);          // Add newly used bytes
+
+            // Set adrres box
             ActAddresBox.Text = start.ToString();
             ActAddresBox.Tag = ActAddresBox.Text;
+            ActAddresBox.ToolTip = ActAddresBox.Tag.ToString();
+            
+            // Set data type combo
             actcombo.Tag = needspace;
+            actcombo.ToolTip = actcombo.Tag.ToString();
 
+            // Set value box 
             ChangeValueBox(selectedrow, actcombo.SelectedValue.ToString());
 
             if (selectedrow == lastdatarow)
@@ -639,43 +647,50 @@ namespace S7Lite
             TextBox valuebox = GetValueTextBox(selectedrow.ToString());
             bool IsTextBox = valuebox != null ? true : false;
 
-            // Check if bit value exists
+            // Check if grid with bit values exists
             Grid bitbox = GetBitValueBox(selectedrow.ToString());
             bool IsBitValue = bitbox != null ? true : false;
 
+            // Add Textbox or grid 
             if (type == "BIT")
             {
                 if (IsTextBox | !IsBitValue)
                 {
                     //Remove text box
-                    GridData.Children.RemoveAt(GridData.Children.IndexOf(valuebox));
-
-                    // Add bits
-                    Grid stack = new Grid();
-                    stack.RowDefinitions.Add(new RowDefinition());
-
-                    for (int b = 0; b < 8; b++)
-                    {
-                        stack.ColumnDefinitions.Add(new ColumnDefinition());
+                    if (valuebox != null) { 
+                        GridData.Children.RemoveAt(GridData.Children.IndexOf(valuebox));
                     }
 
-                    stack.Name = "bitgrid_" + selectedrow;
-                    stack.Style = Resources["bitgrid"] as Style;
+                    // Add bits
+                    Grid GridBit = new Grid();
+                    GridBit.RowDefinitions.Add(new RowDefinition());
 
                     for (int b = 0; b < 8; b++)
                     {
+                        GridBit.ColumnDefinitions.Add(new ColumnDefinition());
+                    }
+
+                    GridBit.Name = "bitgrid_" + selectedrow;
+                    GridBit.Style = Resources["bitgrid"] as Style;
+
+                    for (int b = 0; b < 8; b++)
+                    {
+                        
                         Label bit = new Label();
                         bit.Content = b.ToString();
-                        bit.Name = "bitvalue_" + selectedrow + "_" + b.ToString();
                         bit.Style = Resources["bitlabel"] as Style;
-                        stack.Children.Add(bit);
+                        bit.Name = "bitvalue_" + selectedrow + "_" + b.ToString();
+                        bit.Tag = b.ToString();                                         // Every label contains bit in TAG
+                        bit.ToolTip = bit.Tag.ToString();
+
+                        GridBit.Children.Add(bit);
                         Grid.SetRow(bit, 0);
                         Grid.SetColumn(bit, b);
                     }
                                        
-                    GridData.Children.Add(stack);
-                    Grid.SetRow(stack, selectedrow);
-                    Grid.SetColumn(stack, 2);
+                    GridData.Children.Add(GridBit);
+                    Grid.SetRow(GridBit, selectedrow);
+                    Grid.SetColumn(GridBit, 2);
                 }
             }
             else
@@ -683,15 +698,28 @@ namespace S7Lite
                 if (IsBitValue | !IsTextBox)
                 {
                     // RemoveBit
-                    GridData.Children.Remove(bitbox);
-
+                    if (bitbox != null) { 
+                        GridData.Children.Remove(bitbox);
+                    }
                     // Add textbox
                     TextBox newbox = new TextBox();
                     newbox.Name = "txtvalue_" + selectedrow;
+
+                    if (type != "CHAR")
+                    {
+                        newbox.Text = "0";
+                    }
+
                     GridData.Children.Add(newbox);
                     Grid.SetRow(newbox, selectedrow);
                     Grid.SetColumn(newbox, 2);
-
+                } 
+                else if (IsTextBox)
+                {
+                    if (type != "CHAR")
+                    {
+                        valuebox.Text = "0";
+                    }
                 }
             }
 
