@@ -36,10 +36,7 @@ namespace S7Lite
         public Boolean run
         {
             get { return _run; }
-            set
-            {
-                _run = value;;
-            }
+            set { _run = value;}
         }
 
         public MainWindow()
@@ -51,33 +48,6 @@ namespace S7Lite
             DB1 = new byte[DB1Size];
 
             SetGui();
-        }
-
-        private void SetGui()
-        {
-            AddRow();
-            GetIp();
-            lblUsedBytes.Text = "0";
-            lbl_Version.Content = "v0.0";
-        }
-
-        private void SetUsedBytes()
-        {
-            lblUsedBytes.Text = DB1UsedBytes.Count.ToString() + "/" + DB1Size;
-        }
-
-        private void GetIp()
-        {
-            cmb_ip.Items.Clear();
-            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
-            foreach (IPAddress ip in localIPs)
-            {
-                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                {
-                    cmb_ip.Items.Add(ip.ToString()) ;
-                }
-            }
-            if (cmb_ip.HasItems) cmb_ip.SelectedIndex = 0;
         }
 
         private Boolean StartServer()
@@ -238,6 +208,37 @@ namespace S7Lite
                 return Start;
             }
         }
+
+        #region Utils
+
+        private void SetGui()
+        {
+            AddRow();
+            GetIp();
+            lblUsedBytes.Text = "0";
+            lbl_Version.Content = "v0.0";
+        }
+
+        private void GetIp()
+        {
+            cmb_ip.Items.Clear();
+            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
+            foreach (IPAddress ip in localIPs)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    cmb_ip.Items.Add(ip.ToString());
+                }
+            }
+            if (cmb_ip.HasItems) cmb_ip.SelectedIndex = 0;
+        }
+
+        private void SetUsedBytes()
+        {
+            lblUsedBytes.Text = DB1UsedBytes.Count.ToString() + "/" + DB1Size;
+        }
+
+        #endregion
 
         #region Add/Del bytes
 
@@ -497,6 +498,8 @@ namespace S7Lite
 
         #endregion
 
+        #region Adrress, data type, value manipulation
+
         private void AddRow()
         {
             GridData.RowDefinitions.Add(new RowDefinition());
@@ -724,5 +727,7 @@ namespace S7Lite
             }
 
         }
+
+        #endregion
     }
 }
