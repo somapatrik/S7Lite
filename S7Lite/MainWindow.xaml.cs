@@ -42,7 +42,6 @@ namespace S7Lite
         public MainWindow()
         {
             InitializeComponent();
-
             Logger.Log("[ -- APP START -- ]");
 
             DB1 = new byte[DB1Size];
@@ -137,20 +136,6 @@ namespace S7Lite
             Thread.Sleep(1000);
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (tserver != null)
-            {
-                run = false;
-
-                if (tserver.IsAlive)
-                {
-                    tserver.Join(1000);
-                }
-            }
-
-            Logger.Log("[ -- APP CLOSE -- ]");
-        }
 
         public void ConsoleLog(string msg)
         {
@@ -288,7 +273,7 @@ namespace S7Lite
 
         #endregion
 
-        #region Click events
+        #region Window events
 
         private void Label_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -356,9 +341,24 @@ namespace S7Lite
             }
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (tserver != null)
+            {
+                run = false;
+
+                if (tserver.IsAlive)
+                {
+                    tserver.Join(1000);
+                }
+            }
+
+            Logger.Log("[ -- APP CLOSE -- ]");
+        }
+
         #endregion
 
-        #region Enable/Disable combos
+        #region Enable/Disable
 
         private void DisableCombos()
         {
@@ -505,23 +505,15 @@ namespace S7Lite
             GridData.RowDefinitions.Add(new RowDefinition());
             int lastdatarow = GridData.RowDefinitions.Count - 1;
 
-            //TextBlock address = new TextBlock();
             TextBox address = new TextBox();
-            TextBox value = new TextBox();
             ComboBox combo = new ComboBox();
+            TextBox value = new TextBox();
+            TextBox inputvalue = new TextBox();
 
             foreach (string type in combotypes)
             {
                 combo.Items.Add(type);
             }
-
-            // Data types
-            combo.Name = "cmbtype_" + lastdatarow;
-            combo.Style = Resources["DataType"] as Style;
-            combo.SelectionChanged += cmbtype_SelectionChanged;
-
-            // DB value
-            value.Name = "txtvalue_" + lastdatarow;
 
             // Address value
             address.Name = "blcaddress_" + lastdatarow;
@@ -533,18 +525,34 @@ namespace S7Lite
             address.LostFocus += Address_LostFocus;
             address.KeyDown += Address_KeyDown;
 
+            // Data types
+            combo.Name = "cmbtype_" + lastdatarow;
+            combo.Style = Resources["DataType"] as Style;
+            combo.SelectionChanged += cmbtype_SelectionChanged;
+
+            // DB value
+            value.Name = "txtvalue_" + lastdatarow;
+            value.Style = Resources["ValueBox"] as Style;
+
+            // Input value
+            inputvalue.Name = "inputvalue_" + lastdatarow;
+            inputvalue.Style = Resources["InputBox"] as Style;
+
             // Create new data row
             GridData.Children.Add(address);
-            GridData.Children.Add(value);
             GridData.Children.Add(combo);
+            GridData.Children.Add(value);
+            GridData.Children.Add(inputvalue);
 
             Grid.SetRow(address, lastdatarow);
-            Grid.SetRow(value, lastdatarow);
             Grid.SetRow(combo, lastdatarow);
+            Grid.SetRow(value, lastdatarow);
+            Grid.SetRow(inputvalue, lastdatarow);
 
             Grid.SetColumn(address, 0);
             Grid.SetColumn(combo, 1);
             Grid.SetColumn(value, 2);
+            Grid.SetColumn(inputvalue, 3);
 
             int z = lastdatarow * (-1);
             Grid.SetZIndex(combo, z);
@@ -707,11 +715,9 @@ namespace S7Lite
                     // Add textbox
                     TextBox newbox = new TextBox();
                     newbox.Name = "txtvalue_" + selectedrow;
+                    newbox.Style = Resources["ValueBox"] as Style;
 
-                    if (type != "CHAR")
-                    {
-                        newbox.Text = "0";
-                    }
+                    SetDefaultValue(newbox, type);
 
                     GridData.Children.Add(newbox);
                     Grid.SetRow(newbox, selectedrow);
@@ -719,13 +725,18 @@ namespace S7Lite
                 } 
                 else if (IsTextBox)
                 {
-                    if (type != "CHAR")
-                    {
-                        valuebox.Text = "0";
-                    }
+                    SetDefaultValue(valuebox, type);
                 }
             }
 
+        }
+
+        private void SetDefaultValue(TextBox valuebox,string type)
+        {
+            if (type != "CHAR")
+            {
+                valuebox.Text = "0";
+            }
         }
 
         #endregion
