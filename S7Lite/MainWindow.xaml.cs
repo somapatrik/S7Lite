@@ -673,16 +673,29 @@ namespace S7Lite
                     }
 
                     // Add bits
-                    Grid GridBit = new Grid();
+                    Grid GridBit = new Grid();      // 0123
+                    Grid GridBit2 = new Grid();     // 4567
                     GridBit.RowDefinitions.Add(new RowDefinition());
+                    GridBit2.RowDefinitions.Add(new RowDefinition());
 
                     for (int b = 0; b < 8; b++)
                     {
-                        GridBit.ColumnDefinitions.Add(new ColumnDefinition());
+                        if (b < 4)
+                        {
+                            GridBit.ColumnDefinitions.Add(new ColumnDefinition());
+                        }
+                        else
+                        {
+                            GridBit2.ColumnDefinitions.Add(new ColumnDefinition());
+                        }
+                        
                     }
 
                     GridBit.Name = "bitgrid_" + selectedrow;
                     GridBit.Style = Resources["bitgrid"] as Style;
+
+                    GridBit2.Name = "bitgrid2_" + selectedrow;
+                    GridBit2.Style = Resources["bitgrid"] as Style;
 
                     for (int b = 0; b < 8; b++)
                     {
@@ -694,14 +707,28 @@ namespace S7Lite
                         bit.Tag = b.ToString();                                         // Every label contains bit in TAG
                         bit.ToolTip = bit.Tag.ToString();
 
-                        GridBit.Children.Add(bit);
-                        Grid.SetRow(bit, 0);
-                        Grid.SetColumn(bit, b);
-                    }
-                                       
+                        if (b < 4)
+                        {
+                            GridBit.Children.Add(bit);
+                            Grid.SetRow(bit, 0);
+                            Grid.SetColumn(bit, b);
+                        }
+                        else
+                        {
+                            GridBit2.Children.Add(bit);
+                            Grid.SetRow(bit, 0);
+                            Grid.SetColumn(bit, b - 4);
+                        }
+
+                }
+                             
                     GridData.Children.Add(GridBit);
                     Grid.SetRow(GridBit, selectedrow);
                     Grid.SetColumn(GridBit, 2);
+
+                    //GridData.Children.Add(GridBit2);
+                    //Grid.SetRow(GridBit2, selectedrow);
+                    //Grid.SetColumn(GridBit, 3);
                 }
             }
             else
