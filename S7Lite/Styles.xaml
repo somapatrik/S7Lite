@@ -51,6 +51,14 @@
     <Setter Property="Background" Value="#FF274968"/>
     <Setter Property="HorizontalAlignment" Value="Stretch"/>
     </Style>
+
+    <Style x:Key="ValueBox" TargetType="TextBox">
+        <Setter Property="Background" Value="#FF274968"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="3"/>
+        <Setter Property="BorderThickness" Value=".3"/>
+    </Style>
     
     
     

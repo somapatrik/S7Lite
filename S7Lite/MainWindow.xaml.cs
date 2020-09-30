@@ -427,15 +427,14 @@ namespace S7Lite
             return ActComboBox;
         }
 
-        // OLD
-        private Grid GetBitValueBox(string name)
+        private Grid GetGrid(string name)
         {
             Grid ActBitBox = null;
 
             foreach (Grid child in GridData.Children.OfType<Grid>())
             {
 
-                if (child.Name.ToString() == "bitgrid_" + name)
+                if (child.Name.ToString() == name)
                 {
                     ActBitBox = child;
                     break;
@@ -445,7 +444,7 @@ namespace S7Lite
 
             if (ActBitBox == null)
             {
-                Logger.Log("Could not find " + "bitgrid_" + name, Logger.LogState.Warning);
+                Logger.Log("Could not find " + name, Logger.LogState.Warning);
             }
 
             return ActBitBox;
@@ -635,9 +634,14 @@ namespace S7Lite
             // Check if textbox value exists
             TextBox valuebox = GetTextBox("txtvalue_" + selectedrow.ToString());
             bool IsTextBox = valuebox != null ? true : false;
+            
+            // Get input textbox
+            TextBox InputValueBox = GetTextBox("inputvalue_" + selectedrow.ToString());
 
             // Check if grid with bit values exists
-            Grid bitbox = GetBitValueBox(selectedrow.ToString());
+            Grid bitbox = GetGrid("bitgrid_" + selectedrow.ToString());
+            Grid bitbox2 = GetGrid("bitgrid2_" + selectedrow.ToString());
+
             bool IsBitValue = bitbox != null ? true : false;
 
             // Add Textbox or grid 
@@ -648,11 +652,12 @@ namespace S7Lite
                     //Remove text box
                     if (valuebox != null) { 
                         GridData.Children.RemoveAt(GridData.Children.IndexOf(valuebox));
+                        GridData.Children.RemoveAt(GridData.Children.IndexOf(InputValueBox));
                     }
 
                     // Add bits
-                    Grid GridBit = new Grid();      // 0123
-                    Grid GridBit2 = new Grid();     // 4567
+                    Grid GridBit = new Grid();      // 0 1 2 3 
+                    Grid GridBit2 = new Grid();     // 4 5 6 7 
                     GridBit.RowDefinitions.Add(new RowDefinition());
                     GridBit2.RowDefinitions.Add(new RowDefinition());
 
@@ -704,9 +709,9 @@ namespace S7Lite
                     Grid.SetRow(GridBit, selectedrow);
                     Grid.SetColumn(GridBit, 2);
 
-                    //GridData.Children.Add(GridBit2);
-                    //Grid.SetRow(GridBit2, selectedrow);
-                    //Grid.SetColumn(GridBit, 3);
+                    GridData.Children.Add(GridBit2);
+                    Grid.SetRow(GridBit2, selectedrow);
+                    Grid.SetColumn(GridBit2, 3);
                 }
             }
             else
@@ -716,21 +721,33 @@ namespace S7Lite
                     // RemoveBit
                     if (bitbox != null) { 
                         GridData.Children.Remove(bitbox);
+                        GridData.Children.Remove(bitbox2);
                     }
                     // Add textbox
                     TextBox newbox = new TextBox();
                     newbox.Name = "txtvalue_" + selectedrow;
                     newbox.Style = Resources["ValueBox"] as Style;
 
+                    // Add textbox
+                    TextBox newinput = new TextBox();
+                    newinput.Name = "inputvalue_" + selectedrow;
+                    newinput.Style = Resources["ValueBox"] as Style;
+
                     SetDefaultValue(newbox, type);
+                    SetDefaultValue(newinput, type);
 
                     GridData.Children.Add(newbox);
                     Grid.SetRow(newbox, selectedrow);
                     Grid.SetColumn(newbox, 2);
+
+                    GridData.Children.Add(newinput);
+                    Grid.SetRow(newinput, selectedrow);
+                    Grid.SetColumn(newinput, 3);
                 } 
                 else if (IsTextBox)
                 {
                     SetDefaultValue(valuebox, type);
+                    SetDefaultValue(InputValueBox, type);
                 }
             }
 
@@ -738,10 +755,7 @@ namespace S7Lite
 
         private void SetDefaultValue(TextBox valuebox,string type)
         {
-            if (type != "CHAR")
-            {
-                valuebox.Text = "0";
-            }
+            valuebox.Text = type != "CHAR" ? "0" : "";
         }
 
         #endregion

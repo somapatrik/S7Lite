@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:S7Lite"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Class="S7Lite.MainWindow"
         mc:Ignorable="d"
-        Title="S7Lite" Height="550" Width="350"
+        Title="S7Lite" 
+        Height="550" 
+        Width="400"
         Background="#FF315D85" Closing="Window_Closing">
      
     <Window.Resources>
