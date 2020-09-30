@@ -341,7 +341,7 @@ namespace S7Lite
                     address.Style = Resources["Address"] as Style;
 
                     //address.Tag = address.Text;
-                    ComboBox comb = GetComboBox(address.Name.Split('_')[1]);
+                    ComboBox comb = GetComboBox("cmbtype_" + address.Name.Split('_')[1]);
                     this.cmbtype_SelectionChanged(comb, null);
                 } 
                 else
@@ -411,7 +411,7 @@ namespace S7Lite
             foreach (ComboBox child in GridData.Children.OfType<ComboBox>())
             {
 
-                if (child.Name.ToString() == "cmbtype_" + name)
+                if (child.Name.ToString() == name)
                 {
                     ActComboBox = child;
                     break;
@@ -421,12 +421,13 @@ namespace S7Lite
 
             if (ActComboBox == null)
             {
-                Logger.Log("Could not find " + "cmbtype_" + name, Logger.LogState.Warning);
+                Logger.Log("Could not find " + name, Logger.LogState.Warning);
             }
 
             return ActComboBox;
         }
 
+        // OLD
         private Grid GetBitValueBox(string name)
         {
             Grid ActBitBox = null;
@@ -450,37 +451,14 @@ namespace S7Lite
             return ActBitBox;
         }
 
-        private TextBox GetValueTextBox(string name)
+        private TextBox GetTextBox(string name)
         {
             TextBox ActAddresBox = null;
 
             foreach (TextBox child in GridData.Children.OfType<TextBox>())
             {
 
-                if (child.Name.ToString() == "txtvalue_" + name)
-                {
-                    ActAddresBox = child;
-                    break;
-                }
-
-            }
-
-            if (ActAddresBox == null)
-            {
-                Logger.Log("Could not find " + "txtvalue_" + name, Logger.LogState.Warning);
-            }
-
-            return ActAddresBox;
-        }
-
-        private TextBox GetAddressTextBox(string name)
-        {
-            TextBox ActAddresBox = null;
-
-            foreach (TextBox child in GridData.Children.OfType<TextBox>())
-            {
-
-                if (child.Name.ToString() == "blcaddress_" + name)
+                if (child.Name.ToString() == name)
                 {
                     ActAddresBox = child;
                     break;
@@ -562,7 +540,7 @@ namespace S7Lite
             int selectedrow = Int32.Parse(actcombo.Name.Substring(actcombo.Name.IndexOf('_') + 1));
             int lastdatarow = GridData.RowDefinitions.Count - 1;
 
-            TextBox ActAddresBox = GetAddressTextBox(selectedrow.ToString());
+            TextBox ActAddresBox = GetTextBox("blcaddress_" + selectedrow.ToString());
 
             if (ActAddresBox == null)
             {
@@ -647,7 +625,7 @@ namespace S7Lite
         private void ChangeValueBox(int selectedrow, string type)
         {
             // Check if textbox value exists
-            TextBox valuebox = GetValueTextBox(selectedrow.ToString());
+            TextBox valuebox = GetTextBox("txtvalue_" + selectedrow.ToString());
             bool IsTextBox = valuebox != null ? true : false;
 
             // Check if grid with bit values exists
