@@ -8,13 +8,19 @@
         mc:Ignorable="d"
         Title="S7Lite" 
         Height="550" 
-        Width="400"
-        Background="#FF315D85" Closing="Window_Closing">
-     
+        Width="400" Closing="Window_Closing" Tag="FF315D85">
+
     <Window.Resources>
         <ResourceDictionary Source="Styles.xaml"/>
     </Window.Resources>
     
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF4461A4" Offset="0"/>
+            <GradientStop Color="#FF182848" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
+
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

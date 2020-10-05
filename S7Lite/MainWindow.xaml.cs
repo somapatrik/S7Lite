@@ -25,6 +25,7 @@ namespace S7Lite
         S7Server server;
         Thread tserver;
         Thread watch;
+        Thread read;
 
         int DB1Size = 1024;
         List<int> DB1UsedBytes = new List<int>();
@@ -198,12 +199,65 @@ namespace S7Lite
 
         private void StartReadingThread()
         {
+            try
+            {
+                if (read != null)
+                {
+                    Logger.Log("Reading thread already exists");
 
+                    if (!read.IsAlive)
+                    {
+                        Logger.Log("Starting reading thread");
+                        read.Start();
+                    }                   
+                else
+                {
+                        Logger.Log("Creating new reading thread");
+                        read = new Thread(() => { WatchThread(); });
+                        Logger.Log("Starting reading thread");
+                        read.Start();
+                }
+
+                    Logger.Log("Reading thread started");
+                }
+            } 
+            catch (Exception ex)
+            {
+                
+            }         
         }
 
         private void StopReadingThread()
         {
+            if (read != null)
+            {
+                if (read.IsAlive)
+                {
+                    Logger.Log("Trying to stop reading thread");
 
+                    Task killwatch = new Task(() =>
+                    {
+                        read.Join();
+                        return;
+                    });
+                }
+            }
+
+            Logger.Log("Reading thread is dead");
+        }
+
+        private void ReadingThread()
+        {
+            while (EnableReading)
+            {
+                int rows = GridData.RowDefinitions.Count;
+
+                for (int i = 0; i <= rows; i++)
+                {
+
+                }
+
+            }
         }
 
         #endregion
@@ -920,7 +974,7 @@ namespace S7Lite
                     // Add textbox
                     TextBox newinput = new TextBox();
                     newinput.Name = "inputvalue_" + selectedrow;
-                    newinput.Style = Resources["ValueBox"] as Style;
+                    newinput.Style = Resources["InputBox"] as Style;
 
                     SetDefaultValue(newbox, type);
                     SetDefaultValue(newinput, type);

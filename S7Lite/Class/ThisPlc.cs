@@ -1,4 +1,5 @@
-﻿using Snap7;
+﻿using S7Lite.Class;
+using Snap7;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace S7Lite
 
         public static string PLC_IP = "127.0.0.1";
 
-        public static List<byte[]> PLC_Memory;
+        public static List<DB> PLC_Memory;
 
         public static Boolean StartPLCServer()
         {
