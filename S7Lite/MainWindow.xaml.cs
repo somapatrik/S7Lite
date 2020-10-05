@@ -24,6 +24,7 @@ namespace S7Lite
     {
         S7Server server;
         Thread tserver;
+        Thread watch;
 
         int DB1Size = 1024;
         List<int> DB1UsedBytes = new List<int>();
@@ -31,6 +32,26 @@ namespace S7Lite
 
         List<string> combotypes = new List<string> {"BIT","BYTE", "CHAR","WORD", "INT", "DWORD", "DINT", "REAL"};
 
+        private Boolean WatchEnabled;
+
+        private Boolean EnableWatch
+        { 
+            set
+            {
+                WatchEnabled = value;
+
+                if (value)
+                    StartWatchThread();
+                else
+                    StopWatchThread();
+            }
+            
+            get
+            {
+                return WatchEnabled;
+            }
+        }
+        
         // Thread server
         private Boolean _run;
         public Boolean run
@@ -47,7 +68,118 @@ namespace S7Lite
             DB1 = new byte[DB1Size];
 
             SetGui();
+
+            // Thread for watching other threads
+            EnableWatch = true;
         }
+
+        #region WatchThread
+
+        private void StartWatchThread()
+        {
+            try { 
+                if (watch != null)
+                {
+                    ConsoleLog("Watch thread already exists");
+
+                    if (!watch.IsAlive)
+                    {
+                        ConsoleLog("Starting watch thread");
+                        watch.Start();
+                    }
+
+                } else
+                {
+                    ConsoleLog("Creating new watch thread");
+                    watch = new Thread(() => { WatchThread(); });
+                    ConsoleLog("Starting watch thread");
+                    watch.Start();
+                }
+
+                ConsoleLog("Watch thread started");
+
+            } catch (Exception ex)
+            {
+                ConsoleLog(ex.Message);
+            }
+        }
+
+        private void StopWatchThread()
+        {
+            if (watch != null)
+            {
+                if (watch.IsAlive)
+                {
+                    ConsoleLog("Trying to stop watch thread");
+                    
+                    Task killwatch = new Task(() =>
+                    {
+                       watch.Join();
+                       return;
+                    });  
+                }
+            }
+
+            ConsoleLog("Watch thread is dead");
+        }
+
+        private void WatchThread()
+        {
+            try
+            {
+                while (WatchEnabled)
+                {
+                    // Server status
+                    lbl_Server.Dispatcher.Invoke(() => 
+                    {
+                        if (tserver != null)
+                        {
+                            lbl_Server.Style = tserver.IsAlive ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
+                        } else
+                        {
+                            lbl_Server.Style = Resources["TopButton"] as Style;
+                        }
+                    });
+                      
+                    
+                    // CPU Status
+                    string CPUStatus = "CPU Status";
+
+                    Boolean IsOK = false;
+
+                    if (server != null)
+                    {
+                        switch (server.CpuStatus)
+                        {
+                            case 0:
+                                CPUStatus = "Unknown";
+                                break;
+                            case 8:
+                                CPUStatus = "Run";
+                                IsOK = true;
+                                break;
+                            case 4:
+                                CPUStatus = "Stop";
+                                break;
+                        }
+
+
+                        lbl_Online.Dispatcher.Invoke(() =>
+                        {
+                            lbl_Online.Style = IsOK ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
+                            lbl_Online.Content = CPUStatus;
+                        });
+
+                    }
+                }
+            } 
+            catch (Exception ex)
+            {
+
+            } 
+        }
+
+        #endregion
 
         private Boolean StartServer()
         {
@@ -62,6 +194,7 @@ namespace S7Lite
             {
                 if (server != null)
                 {
+                    server.CpuStatus = 4;
                     server.Stop();
                 }
             }
@@ -136,11 +269,20 @@ namespace S7Lite
             Thread.Sleep(1000);
         }
 
-
         public void ConsoleLog(string msg)
         {
-            LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
-            Scroll.ScrollToBottom();
+            if (!Dispatcher.CheckAccess())
+            {
+                LogConsole.Dispatcher.Invoke( () => { 
+                    LogConsole.Text += DateTime.Now.ToString("T[HH:mm:ss] ") + msg + Environment.NewLine;
+                    Scroll.ScrollToBottom();
+                });
+            } 
+            else
+            {
+                LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
+                Scroll.ScrollToBottom();
+            }
         }
 
         private int GetLastFreeByte(int NeedLength = 1, bool FromMax = true, int StartFrom = 0)
@@ -352,6 +494,8 @@ namespace S7Lite
                     tserver.Join(1000);
                 }
             }
+
+            EnableWatch = false;
 
             Logger.Log("[ -- APP CLOSE -- ]");
         }

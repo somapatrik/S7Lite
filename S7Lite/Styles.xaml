@@ -59,7 +59,21 @@
         <Setter Property="Padding" Value="3"/>
         <Setter Property="BorderThickness" Value=".3"/>
     </Style>
-    
-    
-    
+
+
+    <Style x:Key="TopButton" TargetType="Label">
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Margin" Value=".7"/>
+    </Style>
+
+    <Style x:Key="TopButtonOK" TargetType="Label" BasedOn="{StaticResource TopButton}">
+        <Setter Property="Background" Value="LimeGreen"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+
+    <Style x:Key="TopButtonNOK" TargetType="Label" BasedOn="{StaticResource TopButton}">
+        <Setter Property="Background" Value="IndianRed"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
 </ResourceDictionary>
