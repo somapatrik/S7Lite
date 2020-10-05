@@ -33,7 +33,6 @@ namespace S7Lite
         List<string> combotypes = new List<string> {"BIT","BYTE", "CHAR","WORD", "INT", "DWORD", "DINT", "REAL"};
 
         private Boolean WatchEnabled;
-
         private Boolean EnableWatch
         { 
             set
@@ -50,6 +49,20 @@ namespace S7Lite
             {
                 return WatchEnabled;
             }
+        }
+
+        private Boolean ReadingEnabled;
+        private Boolean EnableReading
+        {
+            set
+            {
+                ReadingEnabled = value;
+                if (value)
+                    StartReadingThread();
+                else
+                    StopReadingThread();
+            }
+            get { return ReadingEnabled; }
         }
         
         // Thread server
@@ -80,23 +93,23 @@ namespace S7Lite
             try { 
                 if (watch != null)
                 {
-                    ConsoleLog("Watch thread already exists");
+                    Logger.Log("Watch thread already exists");
 
                     if (!watch.IsAlive)
                     {
-                        ConsoleLog("Starting watch thread");
+                        Logger.Log("Starting watch thread");
                         watch.Start();
                     }
 
                 } else
                 {
-                    ConsoleLog("Creating new watch thread");
+                    Logger.Log("Creating new watch thread");
                     watch = new Thread(() => { WatchThread(); });
-                    ConsoleLog("Starting watch thread");
+                    Logger.Log("Starting watch thread");
                     watch.Start();
                 }
 
-                ConsoleLog("Watch thread started");
+                Logger.Log("Watch thread started");
 
             } catch (Exception ex)
             {
@@ -110,7 +123,7 @@ namespace S7Lite
             {
                 if (watch.IsAlive)
                 {
-                    ConsoleLog("Trying to stop watch thread");
+                    Logger.Log("Trying to stop watch thread");
                     
                     Task killwatch = new Task(() =>
                     {
@@ -120,7 +133,7 @@ namespace S7Lite
                 }
             }
 
-            ConsoleLog("Watch thread is dead");
+            Logger.Log("Watch thread is dead");
         }
 
         private void WatchThread()
@@ -181,6 +194,20 @@ namespace S7Lite
 
         #endregion
 
+        #region ReadThread
+
+        private void StartReadingThread()
+        {
+
+        }
+
+        private void StopReadingThread()
+        {
+
+        }
+
+        #endregion
+
         private Boolean StartServer()
         {
             server = new S7Server();
@@ -216,6 +243,7 @@ namespace S7Lite
                         
                         DisableCombos();
                         DisableAddresses();
+                        DisableActValues();
              
                         tserver = new Thread(() => { ServerWork(); });
                         tserver.Name = "S7Server";
@@ -232,6 +260,7 @@ namespace S7Lite
                     btn_connect.Content = "Start";
                     EnableCombos();
                     EnableAddresses();
+                    EnableActValues();
                 }
 
             } catch (Exception ex)
@@ -246,7 +275,7 @@ namespace S7Lite
             {
                 while (run)
                 {
-                    TestServer();
+                    
                 }
             }
             catch (Exception ex)
@@ -256,17 +285,9 @@ namespace S7Lite
             }
             finally
             {
-                //btn_connect.Dispatcher.Invoke(() => { btn_connect.Content = "Stop"; });
-
                 Dispatcher.Invoke(() => { ConsoleLog("Server stopped"); });
-                //Logger.Log("[" + MethodInfo.GetCurrentMethod().Name + "]" + " Server stopped");
             }
             
-        }
-
-        private void TestServer()
-        {
-            Thread.Sleep(1000);
         }
 
         public void ConsoleLog(string msg)
@@ -517,6 +538,30 @@ namespace S7Lite
             foreach (ComboBox child in GridData.Children.OfType<ComboBox>())
             {
                 child.IsEnabled = true;
+            }
+        }
+
+        private void DisableActValues()
+        {
+            foreach (TextBox child in GridData.Children.OfType<TextBox>())
+            {
+                if (child.Name.StartsWith("txtvalue_"))
+                {
+                    child.IsEnabled = false;
+                }
+
+            }
+        }
+
+        private void EnableActValues()
+        {
+            foreach (TextBox child in GridData.Children.OfType<TextBox>())
+            {
+                if (child.Name.StartsWith("txtvalue_"))
+                {
+                    child.IsEnabled = true;
+                }
+
             }
         }
 
