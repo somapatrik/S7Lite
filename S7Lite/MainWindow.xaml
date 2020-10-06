@@ -16,8 +16,8 @@
     
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-            <GradientStop Color="#FF4461A4" Offset="0"/>
-            <GradientStop Color="#FF182848" Offset="1"/>
+            <GradientStop Color="#FF414345" Offset="0"/>
+            <GradientStop Color="#FF232526" Offset="1"/>
         </LinearGradientBrush>
     </Window.Background>
 
@@ -58,9 +58,9 @@
                 <Grid x:Name="GridData" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50px"/>
+                        <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                 </Grid>
             </StackPanel>

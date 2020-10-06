@@ -13,8 +13,8 @@
     </Style>
 
     <Style x:Key="Address" TargetType="TextBox">
-        <Setter Property="Background" Value="#FF182848"/>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="#FF353028"/>
+        <Setter Property="Foreground" Value="#FFAAAAAA"/>
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="Padding" Value="3"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -30,9 +30,9 @@
     </Style>
 
     <Style x:Key="bitlabel" TargetType="Label">
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="#FFAAAAAA"/>
         <Setter Property="BorderThickness" Value=".5"/>
-        <Setter Property="BorderBrush" Value="White"/>
+        <Setter Property="BorderBrush" Value="#FFAAAAAA"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Style.Triggers>
@@ -48,22 +48,22 @@
     </Style>
 
     <Style x:Key="bitgrid" TargetType="Grid">
-    <Setter Property="Background" Value="#FF274968"/>
+        <Setter Property="Background" Value="#FF353028"/>
     <Setter Property="HorizontalAlignment" Value="Stretch"/>
     </Style>
 
     <Style x:Key="ValueBox" TargetType="TextBox">
-        <Setter Property="Background" Value="#FF182848"/>  <!--="#FF274968"/>-->
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="#FF353028"/>  <!--="#FF274968"/>-->
+        <Setter Property="Foreground" Value="#FFAAAAAA"/>
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="Padding" Value="3"/>
         <Setter Property="BorderThickness" Value=".3"/>
     </Style>
 
     <Style x:Key="InputBox" TargetType="TextBox">
-        <Setter Property="Background" Value="#FF182848"/>
+        <Setter Property="Background" Value="#FF353028"/>
         <!--="#FF274968"/>-->
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="#FFAAAAAA"/>
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="Padding" Value="3"/>
         <Setter Property="BorderThickness" Value=".3"/>

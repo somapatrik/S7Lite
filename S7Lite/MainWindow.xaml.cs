@@ -154,8 +154,21 @@ namespace S7Lite
                             lbl_Server.Style = Resources["TopButton"] as Style;
                         }
                     });
-                      
-                    
+
+                    // Reading status
+                    lbl_Read.Dispatcher.Invoke(() =>
+                    {
+                        if (read != null)
+                        {
+                            lbl_Read.Style = read.IsAlive ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
+                        }
+                        else
+                        {
+                            lbl_Read.Style = Resources["TopButton"] as Style;
+                        }
+                    });
+
+
                     // CPU Status
                     string CPUStatus = "CPU Status";
 
@@ -329,7 +342,7 @@ namespace S7Lite
             {
                 while (run)
                 {
-                    
+                    Thread.Sleep(100);
                 }
             }
             catch (Exception ex)
