@@ -77,11 +77,12 @@ namespace S7Lite
         public MainWindow()
         {
             InitializeComponent();
+
             Logger.Log("[ -- APP START -- ]");
-
-            DB1 = new byte[DB1Size];
-
             SetGui();
+
+            // Ini values
+            DB1 = new byte[DB1Size];
 
             // Thread for watching other threads
             EnableWatch = true;
@@ -275,55 +276,24 @@ namespace S7Lite
 
         #endregion
 
-        private Boolean StartServer()
-        {
-            server = new S7Server();
-            server.RegisterArea(S7Server.S7AreaDB, 1, ref DB1, DB1.Length);
-            return server.StartTo(cmb_ip.SelectedItem.ToString()) == 0 ? true : false;
-        }
-
-        private void StopServer()
-        {
-            try
-            {
-                if (server != null)
-                {
-                    server.CpuStatus = 4;
-                    server.Stop();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex.Message, Logger.LogState.Error);
-            }
-        }
-
         private void btn_connect_Click(object sender, RoutedEventArgs e)
         {
             try {
 
-                if (!run)
+                if (!PlcServer.IsRunning)
                 {
-                    if (StartServer())
+                    if (PlcServer.StartPLCServer())
                     {
                         btn_connect.Content = "Stop";
-                        
                         DisableCombos();
                         DisableAddresses();
                         DisableActValues();
-             
-                        tserver = new Thread(() => { ServerWork(); });
-                        tserver.Name = "S7Server";
-                        tserver.Start();
-
-                        run = true;
-                        ConsoleLog("Server started at " + cmb_ip.Text);
                     }
+
                 } else
                 {
-                    run = false;
-                    StopServer();
-                    ConsoleLog("Stopping server");
+                    PlcServer.StopPLCServer();
+
                     btn_connect.Content = "Start";
                     EnableCombos();
                     EnableAddresses();
@@ -504,6 +474,11 @@ namespace S7Lite
         #endregion
 
         #region Window events
+
+        private void cmb_ip_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PlcServer.PLC_IP = cmb_ip.SelectedValue.ToString();
+        }
 
         private void Label_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -1015,5 +990,6 @@ namespace S7Lite
         }
 
         #endregion
+
     }
 }

@@ -80,7 +80,7 @@
     </ApplicationDefinition>
     <Compile Include="Class\DB.cs" />
     <Compile Include="Class\snap7.net.cs" />
-    <Compile Include="Class\ThisPlc.cs" />
+    <Compile Include="Class\PlcServer.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
