@@ -12,7 +12,7 @@ namespace S7Lite.Class
         public int number;
         public byte[] array;
 
-        public DB(int number, byte[] array)
+        public DB(int number, ref byte[] array)
         {
             this.number = number;
             this.array = array;

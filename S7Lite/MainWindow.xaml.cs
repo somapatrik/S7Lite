@@ -17,19 +17,18 @@ using System.Windows.Shapes;
 using System.Reflection;
 using Snap7;
 using System.Runtime.CompilerServices;
+using S7Lite.Class;
 
 namespace S7Lite
 {
     public partial class MainWindow : Window
     {
-        S7Server server;
-        Thread tserver;
         Thread watch;
         Thread read;
 
         int DB1Size = 1024;
         List<int> DB1UsedBytes = new List<int>();
-        byte[] DB1;
+        byte[] datablock;
 
         List<string> combotypes = new List<string> {"BIT","BYTE", "CHAR","WORD", "INT", "DWORD", "DINT", "REAL"};
 
@@ -66,29 +65,24 @@ namespace S7Lite
             get { return ReadingEnabled; }
         }
         
-        // Thread server
-        private Boolean _run;
-        public Boolean run
-        {
-            get { return _run; }
-            set { _run = value;}
-        }
-
         public MainWindow()
         {
             InitializeComponent();
-
             Logger.Log("[ -- APP START -- ]");
             SetGui();
 
             // Ini values
-            DB1 = new byte[DB1Size];
+            datablock = new byte[DB1Size];
+            DB db1 = new DB(1, ref datablock);
+
+
 
             // Thread for watching other threads
             EnableWatch = true;
         }
 
         #region WatchThread
+        // TODO: to a seperated class
 
         private void StartWatchThread()
         {
@@ -147,9 +141,23 @@ namespace S7Lite
                     // Server status
                     lbl_Server.Dispatcher.Invoke(() => 
                     {
-                        if (tserver != null)
+                        if (PlcServer.PLC != null)
                         {
-                            lbl_Server.Style = tserver.IsAlive ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
+                            switch (PlcServer.PLC.ServerStatus)
+                            {
+                                case 1:
+                                    lbl_Server.Style = Resources["TopButtonOK"] as Style;
+                                    lbl_Server.Content = "Server";
+                                    break;
+                                case 2:
+                                    lbl_Server.Style = Resources["TopButtonNOK"] as Style;
+                                    lbl_Server.Content = "Server error";
+                                    break;
+                                case 0:
+                                    lbl_Server.Style = Resources["TopButtonNOK"] as Style;
+                                    lbl_Server.Content = "Server stop";
+                                    break;
+                            }
                         } else
                         {
                             lbl_Server.Style = Resources["TopButton"] as Style;
@@ -169,47 +177,47 @@ namespace S7Lite
                         }
                     });
 
-
                     // CPU Status
-                    string CPUStatus = "CPU Status";
-
-                    Boolean IsOK = false;
-
-                    if (server != null)
+                    lbl_Online.Dispatcher.Invoke(() =>
                     {
-                        switch (server.CpuStatus)
+                        if (PlcServer.PLC != null)
                         {
-                            case 0:
-                                CPUStatus = "Unknown";
-                                break;
-                            case 8:
-                                CPUStatus = "Run";
-                                IsOK = true;
-                                break;
-                            case 4:
-                                CPUStatus = "Stop";
-                                break;
+                            switch (PlcServer.PLC.CpuStatus)
+                            {
+                                case 0:
+                                    lbl_Online.Style = Resources["TopButtonNOK"] as Style;
+                                    lbl_Online.Content = "CPU Unkown";
+                                    break;
+                                case 4:
+                                    lbl_Online.Style = Resources["TopButtonNOK"] as Style;
+                                    lbl_Online.Content = "CPU in STOP";
+                                    break;
+                                case 8:
+                                    lbl_Online.Style = Resources["TopButtonOK"] as Style;
+                                    lbl_Online.Content = "CPU in RUN";
+                                    break;
+                            }
                         }
-
-
-                        lbl_Online.Dispatcher.Invoke(() =>
+                        else
                         {
-                            lbl_Online.Style = IsOK ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
-                            lbl_Online.Content = CPUStatus;
-                        });
+                            lbl_Online.Style = Resources["TopButton"] as Style;
+                        }
+                    });
 
-                    }
                 }
+                
             } 
             catch (Exception ex)
             {
-
+                Logger.Log("Watch thread error: " + ex.Message, Logger.LogState.Error);
+                ConsoleLog("Watch thread error: " + ex.Message);
             } 
         }
 
         #endregion
 
         #region ReadThread
+        // Every screen needs it´s own thread
 
         private void StartReadingThread()
         {
@@ -284,6 +292,7 @@ namespace S7Lite
                 {
                     if (PlcServer.StartPLCServer())
                     {
+                        ConsoleLog("Server started at " + PlcServer.PLC_IP);
                         btn_connect.Content = "Stop";
                         DisableCombos();
                         DisableAddresses();
@@ -294,6 +303,7 @@ namespace S7Lite
                 {
                     PlcServer.StopPLCServer();
 
+                    ConsoleLog("Server stopped");
                     btn_connect.Content = "Start";
                     EnableCombos();
                     EnableAddresses();
@@ -303,43 +313,6 @@ namespace S7Lite
             } catch (Exception ex)
             {
                 Logger.Log("[" + MethodBase.GetCurrentMethod().Name + "]" + ex.Message, Logger.LogState.Error);
-            }
-        }
-
-        private void ServerWork()
-        {
-            try
-            {
-                while (run)
-                {
-                    Thread.Sleep(100);
-                }
-            }
-            catch (Exception ex)
-            {
-                Dispatcher.Invoke(() => { ConsoleLog(ex.Message); });
-                Logger.Log(ex.Message, Logger.LogState.Error);
-            }
-            finally
-            {
-                Dispatcher.Invoke(() => { ConsoleLog("Server stopped"); });
-            }
-            
-        }
-
-        public void ConsoleLog(string msg)
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                LogConsole.Dispatcher.Invoke( () => { 
-                    LogConsole.Text += DateTime.Now.ToString("T[HH:mm:ss] ") + msg + Environment.NewLine;
-                    Scroll.ScrollToBottom();
-                });
-            } 
-            else
-            {
-                LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
-                Scroll.ScrollToBottom();
             }
         }
 
@@ -395,6 +368,22 @@ namespace S7Lite
         }
 
         #region Utils
+
+        public void ConsoleLog(string msg)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                LogConsole.Dispatcher.Invoke(() => {
+                    LogConsole.Text += DateTime.Now.ToString("T[HH:mm:ss] ") + msg + Environment.NewLine;
+                    Scroll.ScrollToBottom();
+                });
+            }
+            else
+            {
+                LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
+                Scroll.ScrollToBottom();
+            }
+        }
 
         private void SetGui()
         {
@@ -548,15 +537,7 @@ namespace S7Lite
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (tserver != null)
-            {
-                run = false;
-
-                if (tserver.IsAlive)
-                {
-                    tserver.Join(1000);
-                }
-            }
+            PlcServer.StopPLCServer();
 
             EnableWatch = false;
 
@@ -770,6 +751,7 @@ namespace S7Lite
             Logger.Log("Add new line #" + lastdatarow);
         }
 
+        // Data type changes
         private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -860,6 +842,7 @@ namespace S7Lite
             }
         }
 
+        // Set valuebox BIT/Text
         private void ChangeValueBox(int selectedrow, string type)
         {
             // Check if textbox value exists

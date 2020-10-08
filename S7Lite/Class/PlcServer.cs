@@ -10,7 +10,7 @@ namespace S7Lite
 {
     public static class PlcServer
     {
-        public static S7Server PLC = new S7Server();
+        public static S7Server PLC; //= new S7Server();
 
         public static string PLC_IP;
 
@@ -18,10 +18,18 @@ namespace S7Lite
 
         public static bool IsRunning;
 
+
         public static Boolean StartPLCServer()
         {
+            if (PLC == null)
+                PLC = new S7Server();
+
             bool error = PLC.StartTo(PLC_IP) == 0 ? false : true;
             IsRunning = error ? false : true;
+
+            if (IsRunning)
+                PLC.CpuStatus = 8;
+
             return IsRunning;
         }
 
