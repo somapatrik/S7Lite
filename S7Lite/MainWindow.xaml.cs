@@ -75,8 +75,6 @@ namespace S7Lite
             datablock = new byte[DB1Size];
             DB db1 = new DB(1, ref datablock);
 
-
-
             // Thread for watching other threads
             EnableWatch = true;
         }
