@@ -1,4 +1,5 @@
-﻿using System;
+﻿using S7Lite.Class;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -27,7 +28,10 @@ namespace S7Lite
         int DBSize = 1024;
         int DBNumber;
         List<int> DB1UsedBytes = new List<int>();
+
         byte[] datablock;
+
+        DB DbObject;
 
         List<string> combotypes = new List<string> { "BIT", "BYTE", "CHAR", "WORD", "INT", "DWORD", "DINT", "REAL" };
 
@@ -64,10 +68,13 @@ namespace S7Lite
             get { return ReadingEnabled; }
         }
 
-        public DBControl(int DbNumber, ref byte[] DbArray)
+        public DBControl(ref DB db)
         {
             InitializeComponent();
-            DBNumber = DbNumber;
+
+            DbObject = db;
+            DBNumber = db.number;
+            datablock = db.array;
             SetGui();
         }
 
@@ -312,59 +319,7 @@ namespace S7Lite
             {
                 Logger.Log("[" + MethodBase.GetCurrentMethod().Name + "]" + ex.Message, Logger.LogState.Error);
             }
-        }
-
-        private int GetLastFreeByte(int NeedLength = 1, bool FromMax = true, int StartFrom = 0)
-        {
-
-            if (DB1UsedBytes.Count == 0)
-            {
-                return 0;
-            }
-            else
-            {
-
-                // Start byte
-                int Start = 0;
-
-                if (FromMax)
-                {
-                    Start = DB1UsedBytes.Max() + 1;  // First avaiable byte
-                }
-                else
-                {
-                    // Test every byte from start value
-                    bool TestNext = false;
-
-                    for (int ActByte = StartFrom; ActByte < DBSize; ActByte++)
-                    {
-                        // Test space after every byte
-                        for (int TestByte = ActByte; TestByte < (ActByte + NeedLength); TestByte++)
-                        {
-                            if (DB1UsedBytes.Contains(TestByte))
-                            {
-                                TestNext = true; // There is not enough space  
-                                break;           // Try another byte in array
-                            }
-                            TestNext = false;
-                        }
-                        // Test finished = TextNext = false
-                        if (!TestNext)
-                        {
-                            Start = ActByte;
-                            break;
-                        }
-                    }
-                }
-
-                if ((Start + NeedLength) > (DBSize))
-                {
-                    return -1; // Out of db memory
-                }
-
-                return Start;
-            }
-        }
+        }      
 
         #region Utils
 
@@ -687,6 +642,58 @@ namespace S7Lite
         #endregion
 
         #region Adrress, data type, value manipulation
+
+        private int GetLastFreeByte(int NeedLength = 1, bool FromMax = true, int StartFrom = 0)
+        {
+
+            if (DB1UsedBytes.Count == 0)
+            {
+                return 0;
+            }
+            else
+            {
+
+                // Start byte
+                int Start = 0;
+
+                if (FromMax)
+                {
+                    Start = DB1UsedBytes.Max() + 1;  // First avaiable byte
+                }
+                else
+                {
+                    // Test every byte from start value
+                    bool TestNext = false;
+
+                    for (int ActByte = StartFrom; ActByte < DBSize; ActByte++)
+                    {
+                        // Test space after every byte
+                        for (int TestByte = ActByte; TestByte < (ActByte + NeedLength); TestByte++)
+                        {
+                            if (DB1UsedBytes.Contains(TestByte))
+                            {
+                                TestNext = true; // There is not enough space  
+                                break;           // Try another byte in array
+                            }
+                            TestNext = false;
+                        }
+                        // Test finished = TextNext = false
+                        if (!TestNext)
+                        {
+                            Start = ActByte;
+                            break;
+                        }
+                    }
+                }
+
+                if ((Start + NeedLength) > (DBSize))
+                {
+                    return -1; // Out of db memory
+                }
+
+                return Start;
+            }
+        }
 
         private void AddRow()
         {

@@ -14,7 +14,7 @@ namespace S7Lite
 
         public static string PLC_IP;
 
-        public static List<DB> PLC_Memory;
+        public static List<DB> PLC_Memory = new List<DB>();
 
         public static bool IsRunning;
 
@@ -38,6 +38,13 @@ namespace S7Lite
             PLC.Stop();
             PLC.CpuStatus = 4;
             IsRunning = false;
+        }
+
+        public static ref DB AddDB(ref DB newdb)
+        {
+            //DB newdb = new DB(number, new byte[size]);
+            PLC_Memory.Add(newdb);
+            return ref newdb;
         }
 
         private static void RegisterDB()

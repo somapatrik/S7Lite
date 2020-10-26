@@ -69,8 +69,8 @@
         </ScrollViewer>
 
         <!-- ADD DB -->
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Height="auto">
-        <Grid >
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
             
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -83,13 +83,13 @@
 
             <TextBox Grid.Column="0" Text="1" x:Name="txtDBNumber"/>
             <Label Grid.Column="1" Content="Add" x:Name="lblAddDB" MouseLeftButtonDown="lblAddDB_MouseLeftButtonDown"/>
-
-            <!--<ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" Height="auto">-->
-                <StackPanel Grid.Row="1" Grid.ColumnSpan="2" x:Name="DBStack" Orientation="Vertical"/>
-            <!--</ScrollViewer>-->
+            
+            <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Height="auto">
+                <StackPanel x:Name="DBStack" Orientation="Vertical"/>
+            </ScrollViewer>
             
         </Grid>
-        </ScrollViewer>
+        
 
         <!-- Log -->
         <Grid Grid.Row="4">

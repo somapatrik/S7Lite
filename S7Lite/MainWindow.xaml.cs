@@ -26,7 +26,7 @@ namespace S7Lite
         Thread watch;
         Thread read;
 
-        int DB1Size = 1024;
+        int DBMaxSize = 1024;
         List<int> DB1UsedBytes = new List<int>();
         byte[] datablock;
 
@@ -72,8 +72,8 @@ namespace S7Lite
             SetGui();
 
             // Ini values
-            datablock = new byte[DB1Size];
-            DB db1 = new DB(1, ref datablock);
+            datablock = new byte[DBMaxSize];
+            //DB db1 = new DB(1, ref datablock);
 
             // Thread for watching other threads
             EnableWatch = true;
@@ -335,7 +335,7 @@ namespace S7Lite
                    // Test every byte from start value
                     bool TestNext = false; 
 
-                    for (int ActByte = StartFrom; ActByte < DB1Size;ActByte++)
+                    for (int ActByte = StartFrom; ActByte < DBMaxSize;ActByte++)
                     {
                         // Test space after every byte
                         for (int TestByte = ActByte; TestByte < (ActByte + NeedLength); TestByte++)
@@ -356,7 +356,7 @@ namespace S7Lite
                     }
                 }
 
-                if ((Start + NeedLength) > (DB1Size))
+                if ((Start + NeedLength) > (DBMaxSize))
                 {
                     return -1; // Out of db memory
                 }
@@ -407,7 +407,7 @@ namespace S7Lite
 
         private void SetUsedBytes()
         {
-            lblUsedBytes.Text = DB1UsedBytes.Count.ToString() + "/" + DB1Size;
+            lblUsedBytes.Text = DB1UsedBytes.Count.ToString() + "/" + DBMaxSize;
         }
 
         #endregion
@@ -512,7 +512,7 @@ namespace S7Lite
                 int newvalue;
                 bool IsParsed = Int32.TryParse(address.Text, out newvalue);
 
-                if (IsParsed & (newvalue >= 0 && newvalue < DB1Size))
+                if (IsParsed & (newvalue >= 0 && newvalue < DBMaxSize))
                 {
                     address.IsReadOnly = true;
                     address.Style = Resources["Address"] as Style;
@@ -974,8 +974,9 @@ namespace S7Lite
 
         private void lblAddDB_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
-            DBControl dbcontrol = new DBControl(Int32.Parse(txtDBNumber.Text);
+            DB newdb = new DB(Int32.Parse(txtDBNumber.Text), new byte[DBMaxSize]);
+            PlcServer.AddDB(ref newdb);
+            DBControl dbcontrol = new DBControl(ref newdb);
             DBStack.Children.Add(dbcontrol);
         }
     }
