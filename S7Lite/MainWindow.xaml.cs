@@ -972,5 +972,11 @@ namespace S7Lite
 
         #endregion
 
+        private void lblAddDB_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+            DBControl dbcontrol = new DBControl(Int32.Parse(txtDBNumber.Text);
+            DBStack.Children.Add(dbcontrol);
+        }
     }
 }

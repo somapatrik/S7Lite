@@ -25,12 +25,14 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="7*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="4*" x:Name="RowLog"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
+        <!-- IP menu + start -->
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
             <ComboBox x:Name="cmb_ip" HorizontalContentAlignment="Center" Background="#FF315D85" BorderBrush="Black" FontSize="14" Margin="0 5 0 5" Padding="5" SelectionChanged="cmb_ip_SelectionChanged"/>
             <Button x:Name="btn_connect" Click="btn_connect_Click" FontSize="14" Padding="5" Content="Start"/>
@@ -48,13 +50,13 @@
             </Grid>
         </StackPanel>
 
-        <DockPanel Grid.Row="1" Margin="5">
-            <TextBlock HorizontalAlignment="Left" Foreground="WhiteSmoke" Text="DB1"/>
+        <DockPanel Grid.Row="1" Margin="5" Visibility="Collapsed">
+            <TextBlock HorizontalAlignment="Left" Foreground="WhiteSmoke" Text="DB1" />
             <TextBlock x:Name="lblUsedBytes" HorizontalAlignment="Right" Foreground="WhiteSmoke" Text="Used bytes"/>
         </DockPanel>
 
         <ScrollViewer x:Name="ScrollData" Grid.Row="2" VerticalScrollBarVisibility="Auto" Height="auto">
-            <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical" Visibility="Collapsed">
                 <Grid x:Name="GridData" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50px"/>
@@ -66,7 +68,31 @@
             </StackPanel>
         </ScrollViewer>
 
-        <Grid Grid.Row="3">
+        <!-- ADD DB -->
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Height="auto">
+        <Grid >
+            
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0" Text="1" x:Name="txtDBNumber"/>
+            <Label Grid.Column="1" Content="Add" x:Name="lblAddDB" MouseLeftButtonDown="lblAddDB_MouseLeftButtonDown"/>
+
+            <!--<ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" Height="auto">-->
+                <StackPanel Grid.Row="1" Grid.ColumnSpan="2" x:Name="DBStack" Orientation="Vertical"/>
+            <!--</ScrollViewer>-->
+            
+        </Grid>
+        </ScrollViewer>
+
+        <!-- Log -->
+        <Grid Grid.Row="4">
             <Label Content="Log" FontSize="14" Foreground="White" 
                    VerticalAlignment="Stretch" 
                    HorizontalAlignment="Stretch" 
@@ -78,12 +104,12 @@
             />
         </Grid>
 
-        <ScrollViewer Grid.Row="4" x:Name="Scroll" VerticalScrollBarVisibility="Auto" Height="auto" >
+        <ScrollViewer Grid.Row="5" x:Name="Scroll" VerticalScrollBarVisibility="Auto" Height="auto">
             <TextBlock x:Name="LogConsole"  Background="#FF353028" Foreground="#FFAAAAAA" Padding="2" FontSize="12" TextWrapping="Wrap"/>
         </ScrollViewer>
 
         <!-- Last row -->
-        <Grid Grid.Row="5">
+        <Grid Grid.Row="6">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
