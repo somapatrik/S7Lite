@@ -17,20 +17,16 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <!--<DockPanel Grid.Row="0" x:Name="DbBar" MouseLeftButtonDown="DbBar_MouseLeftButtonDown" Background="Green">
-            
-        </DockPanel>-->
-
-        <Grid Grid.Row="0" x:Name="DbBar" MouseLeftButtonDown="DbBar_MouseLeftButtonDown">
+        <Grid Grid.Row="0" x:Name="DbBar" MouseLeftButtonUp="DbBar_MouseLeftButtonUp" >
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" x:Name="lblDBNumber" Foreground="WhiteSmoke" Content="DB control"  HorizontalContentAlignment="Left" />
-            <Label Grid.Column="1" x:Name="lblUsedBytes" Foreground="WhiteSmoke" Content="Used bytes" HorizontalContentAlignment="Right"/>
+            <Label Grid.Column="0" x:Name="lblDBNumber" Foreground="WhiteSmoke" Content="DB control"  Style="{StaticResource DbBar_Name}"/>
+            <Label Grid.Column="1" x:Name="lblUsedBytes" Foreground="WhiteSmoke" Content="Used bytes" Style="{StaticResource DbBar_Name}"/>
         </Grid>
 
-        <Grid Grid.Row="1" Height="auto" x:Name="GridData" VerticalAlignment="Top">
+        <Grid Grid.Row="1" Height="auto" x:Name="GridData" VerticalAlignment="Top" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50px"/>
                 <ColumnDefinition Width="auto"/>

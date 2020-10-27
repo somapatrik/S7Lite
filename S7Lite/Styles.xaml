@@ -62,7 +62,6 @@
 
     <Style x:Key="InputBox" TargetType="TextBox">
         <Setter Property="Background" Value="#FF353028"/>
-        <!--="#FF274968"/>-->
         <Setter Property="Foreground" Value="#FFAAAAAA"/>
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="Padding" Value="3"/>
@@ -85,4 +84,37 @@
         <Setter Property="Background" Value="IndianRed"/>
         <Setter Property="Foreground" Value="White"/>
     </Style>
+
+    <Style x:Key="DbBar_Name" TargetType="Label">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0 .7 0 .7"/>
+        <Setter Property="Margin" Value=" 0 2 0 0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Background" Value="#FF1b1e24"/>
+                <Setter Property="BorderBrush" Value="OrangeRed"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="StartButton" TargetType="Label">
+        <Setter Property="BorderBrush" Value="Orange"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Background" Value="#FF1b1e24"/>
+                <Setter Property="BorderBrush" Value="OrangeRed"/>
+            </Trigger>
+        </Style.Triggers>
+
+    </Style>
+    
 </ResourceDictionary>

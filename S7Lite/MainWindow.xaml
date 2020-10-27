@@ -7,8 +7,8 @@
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Class="S7Lite.MainWindow"
         mc:Ignorable="d"
         Title="S7Lite" 
-        Height="550" 
-        Width="400" Closing="Window_Closing" Tag="FF315D85">
+        Height="600" 
+        Width="400">
 
     <Window.Resources>
         <ResourceDictionary Source="Styles.xaml"/>
@@ -16,26 +16,24 @@
     
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-            <GradientStop Color="#FF3c414e" Offset="0"/>
-            <GradientStop Color="#FF3c414e" Offset="1"/>
+            <GradientStop Color="#FF2E3440" Offset=".6"/>
+            <GradientStop Color="#FF282E38" Offset="1"/>            <!--FF3c414e-->
         </LinearGradientBrush>
     </Window.Background>
 
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="4*" x:Name="RowLog"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>                  <!-- Add button -->
+            <RowDefinition Height="*"/>                     <!-- DBs -->
+            <RowDefinition Height="auto"/>                  <!-- Log button -->
+            <RowDefinition Height="0" x:Name="RowLog"/>     <!-- Log console -->
+            <RowDefinition Height="auto"/>                  <!-- Footer -->
         </Grid.RowDefinitions>
 
         <!-- IP menu + start -->
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
-            <ComboBox x:Name="cmb_ip" HorizontalContentAlignment="Center" Background="#FF315D85" BorderBrush="Black" FontSize="14" Margin="0 5 0 5" Padding="5" SelectionChanged="cmb_ip_SelectionChanged"/>
-            <Button x:Name="btn_connect" Click="btn_connect_Click" FontSize="14" Padding="5" Content="Start"/>
+            <ComboBox x:Name="cmb_ip" HorizontalContentAlignment="Center" Background="#FF315D85" BorderBrush="Black" FontSize="14" Margin="0 5 0 5" Padding="5" />
+            <Label  Content="START" Style="{StaticResource StartButton}"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -50,61 +48,40 @@
             </Grid>
         </StackPanel>
 
-        <DockPanel Grid.Row="1" Margin="5" Visibility="Collapsed">
-            <TextBlock HorizontalAlignment="Left" Foreground="WhiteSmoke" Text="DB1" />
-            <TextBlock x:Name="lblUsedBytes" HorizontalAlignment="Right" Foreground="WhiteSmoke" Text="Used bytes"/>
-        </DockPanel>
-
-        <ScrollViewer x:Name="ScrollData" Grid.Row="2" VerticalScrollBarVisibility="Auto" Height="auto">
-            <StackPanel Orientation="Vertical" Visibility="Collapsed">
-                <Grid x:Name="GridData" VerticalAlignment="Top">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50px"/>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                </Grid>
-            </StackPanel>
-        </ScrollViewer>
-
         <!-- ADD DB -->
-
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+        <Grid Grid.Row="1" >
             
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" Text="1" x:Name="txtDBNumber"/>
-            <Label Grid.Column="1" Content="Add" x:Name="lblAddDB" MouseLeftButtonDown="lblAddDB_MouseLeftButtonDown"/>
-            
-            <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Height="auto">
+            <TextBox Grid.Row="0" Grid.Column="0" Text="1" x:Name="txtDBNumber" Style="{StaticResource InputBox}"/>
+            <Label Grid.Row="0" Grid.Column="1" Content="Add" x:Name="lblAddDB" MouseLeftButtonDown="lblAddDB_MouseLeftButtonDown" Style="{StaticResource TopButton}"/>
+
+            <ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" Height="auto">
                 <StackPanel x:Name="DBStack" Orientation="Vertical"/>
             </ScrollViewer>
             
         </Grid>
         
-
         <!-- Log -->
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="2">
             <Label Content="Log" FontSize="14" Foreground="White" 
                    VerticalAlignment="Stretch" 
                    HorizontalAlignment="Stretch" 
                    VerticalContentAlignment="Center" 
                    HorizontalContentAlignment="Center"
                    Cursor="Hand"
-                   Style="{DynamicResource PanelButton}"
-                   MouseDown="Label_MouseDown"
-            />
+                   Style="{DynamicResource PanelButton}" 
+                   MouseUp="Label_MouseUp"/>
         </Grid>
 
-        <ScrollViewer Grid.Row="5" x:Name="Scroll" VerticalScrollBarVisibility="Auto" Height="auto">
+        <ScrollViewer Grid.Row="3" x:Name="Scroll" VerticalScrollBarVisibility="Auto" Height="auto">
             <TextBlock x:Name="LogConsole"  Background="#FF353028" Foreground="#FFAAAAAA" Padding="2" FontSize="12" TextWrapping="Wrap"/>
         </ScrollViewer>
 
@@ -117,7 +94,7 @@
             </Grid.ColumnDefinitions>
 
             <Label x:Name="lbl_Version" Grid.Column="0" Foreground="WhiteSmoke" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Version"/>
-            <Label Grid.Column="1" Foreground="WhiteSmoke" VerticalAlignment="Center" HorizontalAlignment="Center" Content="CPU 315-2 PN/DP"/>
+            <Label x:Name="lbl_ProdNumber" Grid.Column="1" Foreground="WhiteSmoke" VerticalAlignment="Center" HorizontalAlignment="Center" Content="CPU 315-2 PN/DP"/>
 
         </Grid>
 

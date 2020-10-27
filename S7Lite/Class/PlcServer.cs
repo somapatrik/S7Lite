@@ -40,11 +40,9 @@ namespace S7Lite
             IsRunning = false;
         }
 
-        public static ref DB AddDB(ref DB newdb)
+        public static void AddDB(ref DB newdb)
         {
-            //DB newdb = new DB(number, new byte[size]);
             PLC_Memory.Add(newdb);
-            return ref newdb;
         }
 
         private static void RegisterDB()

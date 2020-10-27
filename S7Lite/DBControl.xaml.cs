@@ -344,7 +344,7 @@ namespace S7Lite
             AddRow();
          //   GetIp();
             lblUsedBytes.Content = "0";
-            lblDBNumber.Content = "DB" + DBNumber;
+            lblDBNumber.Content = "DB " + DBNumber;
         }
 
         //private void GetIp()
@@ -984,7 +984,7 @@ namespace S7Lite
 
         #endregion
 
-        private void DbBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void DbBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             GridData.Visibility = GridData.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
