@@ -23,12 +23,9 @@ namespace S7Lite
 {
     public partial class MainWindow : Window
     {
-        Thread watch;
-        Thread read;
 
         int DBMaxSize = 1024;
         List<int> DB1UsedBytes = new List<int>();
-        byte[] datablock;
 
         List<string> combotypes = new List<string> {"BIT","BYTE", "CHAR","WORD", "INT", "DWORD", "DINT", "REAL"};
 

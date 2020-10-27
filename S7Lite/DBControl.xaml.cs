@@ -78,7 +78,6 @@ namespace S7Lite
             SetGui();
         }
 
-
         #region WatchThread
         // TODO: to a seperated class
 
@@ -347,20 +346,6 @@ namespace S7Lite
             lblDBNumber.Content = "DB " + DBNumber;
         }
 
-        //private void GetIp()
-        //{
-        //    cmb_ip.Items.Clear();
-        //    IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
-        //    foreach (IPAddress ip in localIPs)
-        //    {
-        //        if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-        //        {
-        //            cmb_ip.Items.Add(ip.ToString());
-        //        }
-        //    }
-        //    if (cmb_ip.HasItems) cmb_ip.SelectedIndex = 0;
-        //}
-
         private void SetUsedBytes()
         {
             lblUsedBytes.Content = DB1UsedBytes.Count.ToString() + "/" + DBSize;
@@ -417,23 +402,6 @@ namespace S7Lite
         #endregion
 
         #region Window events
-
-        //private void cmb_ip_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    PlcServer.PLC_IP = cmb_ip.SelectedValue.ToString();
-        //}
-
-        private void Label_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            //if (RowLog.Height.Value == 0)
-            //{
-            //    RowLog.Height = new GridLength(4, GridUnitType.Star);
-            //}
-            //else
-            //{
-            //    RowLog.Height = new GridLength(0);
-            //}
-        }
 
         private void Address_KeyDown(object sender, KeyEventArgs e)
         {
