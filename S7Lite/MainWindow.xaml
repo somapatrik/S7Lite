@@ -23,16 +23,16 @@
 
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>                  <!-- Add button -->
-            <RowDefinition Height="*"/>                     <!-- DBs -->
-            <RowDefinition Height="auto"/>                  <!-- Log button -->
-            <RowDefinition Height="0" x:Name="RowLog"/>     <!-- Log console -->
-            <RowDefinition Height="auto"/>                  <!-- Footer -->
+            <RowDefinition Height="auto"/>                  <!--      IP      -->
+            <RowDefinition Height="*"/>                     <!-- ADD DB + DBs -->
+            <RowDefinition Height="auto"/>                  <!-- Log button   -->
+            <RowDefinition Height="0" x:Name="RowLog"/>     <!-- Log console  -->
+            <RowDefinition Height="auto"/>                  <!--    Footer    -->
         </Grid.RowDefinitions>
 
         <!-- IP menu + start -->
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
-            <ComboBox x:Name="cmb_ip" HorizontalContentAlignment="Center" Background="#FF315D85" BorderBrush="Black" FontSize="14" Margin="0 5 0 5" Padding="5" />
+            <ComboBox x:Name="cmb_ip" HorizontalContentAlignment="Center" FontSize="14" Margin="0 5 0 5" Padding="5" />
             <Label  Content="START" Style="{StaticResource StartButton}"/>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -50,8 +50,9 @@
 
         <!-- ADD DB -->
         <Grid Grid.Row="1" >
-            
+
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
@@ -61,9 +62,12 @@
             </Grid.ColumnDefinitions>
 
             <TextBox Grid.Row="0" Grid.Column="0" Text="1" x:Name="txtDBNumber" Style="{StaticResource InputBox}"/>
-            <Label Grid.Row="0" Grid.Column="1" Content="Add" x:Name="lblAddDB" MouseLeftButtonDown="lblAddDB_MouseLeftButtonDown" Style="{StaticResource TopButton}"/>
+            <Label Grid.Row="0" Grid.Column="1" Content="New DB" x:Name="lblAddDB" MouseLeftButtonDown="lblAddDB_MouseLeftButtonDown" Style="{StaticResource StartButton}" />
 
-            <ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" Height="auto">
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="Collapse all"/>
+
+            
+            <ScrollViewer Grid.Row="2" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" Height="auto">
                 <StackPanel x:Name="DBStack" Orientation="Vertical"/>
             </ScrollViewer>
             
@@ -86,7 +90,7 @@
         </ScrollViewer>
 
         <!-- Last row -->
-        <Grid Grid.Row="6">
+        <Grid Grid.Row="4">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

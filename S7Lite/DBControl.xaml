@@ -17,7 +17,7 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" x:Name="DbBar" MouseLeftButtonUp="DbBar_MouseLeftButtonUp" >
+        <Grid Grid.Row="0" x:Name="DbBar" MouseLeftButtonUp="DbBar_MouseLeftButtonUp" Style="{StaticResource DbNameGrid}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>

@@ -7,7 +7,7 @@
     <Style x:Key="PanelButton" TargetType="Label">
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FF274968"/>
+                <Setter Property="Background" Value="#FF404859"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -38,7 +38,7 @@
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="White"/>
-                <Setter Property="Background" Value="SteelBlue"/>
+                <Setter Property="Background" Value="#404859"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -86,35 +86,34 @@
     </Style>
 
     <Style x:Key="DbBar_Name" TargetType="Label">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0 .7 0 .7"/>
-        <Setter Property="Margin" Value=" 0 2 0 0"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Background" Value="#FF1b1e24"/>
-                <Setter Property="BorderBrush" Value="OrangeRed"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <Style x:Key="StartButton" TargetType="Label">
-        <Setter Property="BorderBrush" Value="Orange"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Background" Value="#404859"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="FontSize" Value="14"/>
+        <Setter Property="BorderBrush" Value="#FF363c4a"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Background" Value="#FF1b1e24"/>
-                <Setter Property="BorderBrush" Value="OrangeRed"/>
+                <Setter Property="Background" Value="#363c4a"/>
+                <Setter Property="BorderBrush" Value="Orange"/>
             </Trigger>
         </Style.Triggers>
-
     </Style>
-    
+
+    <Style x:Key="DbNameGrid" TargetType="Grid">
+        <Setter Property="Background" Value="#404859"/>
+        <!--20242c-->
+        <Setter Property="Margin" Value="0 1"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Background" Value="#363c4a"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>
