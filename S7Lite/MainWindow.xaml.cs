@@ -962,11 +962,17 @@ namespace S7Lite
 
         private void lblAddDB_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            DB newdb = new DB(Int32.Parse(txtDBNumber.Text), new byte[DBMaxSize]);
 
-            PlcServer.AddDB(ref newdb);
-            DBControl dbcontrol = new DBControl(ref newdb);
-            DBStack.Children.Add(dbcontrol);
+            if (PlcServer.IsDbAvailable(Int32.Parse(txtDBNumber.Text)))
+            {
+                DB newdb = new DB(Int32.Parse(txtDBNumber.Text), new byte[DBMaxSize]);
+
+                PlcServer.AddDB(ref newdb);
+                DBControl dbcontrol = new DBControl(ref newdb);
+                DBStack.Children.Add(dbcontrol);
+                txtDBNumber.Text = PlcServer.GetAvailableDB().ToString();
+            }
+  
         }
 
         private void Label_MouseUp(object sender, MouseButtonEventArgs e)

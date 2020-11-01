@@ -43,6 +43,7 @@ namespace S7Lite
         public static void AddDB(ref DB newdb)
         {
             PLC_Memory.Add(newdb);
+
         }
 
         private static void RegisterDB()
@@ -51,6 +52,29 @@ namespace S7Lite
             {
                 PLC.RegisterArea(S7Server.S7AreaDB, datablock.number, ref datablock.array, datablock.array.Length);
             }
+        }
+
+        public static int GetAvailableDB()
+        {
+            int ret = 1;
+
+            if (PLC_Memory.Count > 0)
+            {
+                for (int i = 1; i <= 1024; i++)
+                {
+                    if (!PLC_Memory.Exists(o => o.number == i))
+                    {
+                        return i;
+                    }
+                }
+                ret = 0;
+            }
+            return ret;            
+        }
+
+        public static bool IsDbAvailable(int num)
+        {
+            return !PLC_Memory.Exists(o => o.number == num );
         }
     }
 }
