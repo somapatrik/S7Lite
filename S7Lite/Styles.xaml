@@ -116,4 +116,18 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style x:Key="PopButton" TargetType="Label">
+        <Setter Property="Background" Value="#404859"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="20 1"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#363c4a"/>
+                <Setter Property="Cursor" Value="Hand"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
 </ResourceDictionary>

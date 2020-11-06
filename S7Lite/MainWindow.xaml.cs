@@ -25,55 +25,85 @@ namespace S7Lite
     {
 
         int DBMaxSize = 1024;
-        List<int> DB1UsedBytes = new List<int>();
 
-        List<string> combotypes = new List<string> {"BIT","BYTE", "CHAR","WORD", "INT", "DWORD", "DINT", "REAL"};
+        // Memory with original DB values
+        List<DB> DBMemory = new List<DB>();
 
-        //private Boolean WatchEnabled;
-        //private Boolean EnableWatch
-        //{ 
-        //    set
-        //    {
-        //        WatchEnabled = value;
-
-        //        if (value)
-        //            StartWatchThread();
-        //        else
-        //            StopWatchThread();
-        //    }
-            
-        //    get
-        //    {
-        //        return WatchEnabled;
-        //    }
-        //}
-
-        //private Boolean ReadingEnabled;
-        //private Boolean EnableReading
-        //{
-        //    set
-        //    {
-        //        ReadingEnabled = value;
-        //        if (value)
-        //            StartReadingThread();
-        //        else
-        //            StopReadingThread();
-        //    }
-        //    get { return ReadingEnabled; }
-        //}
-        
         public MainWindow()
         {
             InitializeComponent();
-            //Logger.Log("[ -- APP START -- ]");
-            //SetGui();
+            Logger.Log("[ -- APP START -- ]");
+            txtDBNumber.TextChanged += TxtDBNumber_TextChanged;
+        }
 
-            // Ini values
-            //datablock = new byte[DBMaxSize];
-            //DB db1 = new DB(1, ref datablock);
+        private void TxtDBNumber_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int val;
+            if (!Int32.TryParse(txtDBNumber.Text, out val))
+            {
+                txtDBNumber.Text = PlcServer.GetAvailableDB().ToString();
+            }
+            
+        }
 
-            // Thread for watching other threads
-            //EnableWatch = true;
+        private void lblAddDB_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+            if (PlcServer.IsDbAvailable(Int32.Parse(txtDBNumber.Text)))
+            {
+                // Original object
+                DB newdb = new DB(Int32.Parse(txtDBNumber.Text), new byte[DBMaxSize]);
+                DBMemory.Add(newdb);
+
+                // PLC Server reference
+                PlcServer.AddDB(ref newdb);
+
+                // GUI Controls reference
+                DBControl dbcontrol = new DBControl(ref newdb);
+                dbcontrol.DBRightClicked += Dbcontrol_DBRightClicked;
+                DBStack.Children.Add(dbcontrol);
+
+                txtDBNumber.Text = PlcServer.GetAvailableDB().ToString();
+            }
+
+        }
+
+        private void Dbcontrol_DBRightClicked(object sender, EventArgs e)
+        {
+            PopupDB pop = new PopupDB(((DBControl)sender).DBNumber);
+            PopUpGrid.Children.Add(pop);
+            pop.FirstClicked += Pop_FirstClicked;
+        }
+
+        private void Pop_FirstClicked(object sender, EventArgs e)
+        {
+            PopupDB pop = (PopupDB)sender;
+            RemoveDB(pop.DBNumber);
+            PopUpGrid.Children.Remove(pop);
+        }
+
+        private void RemoveDB(int num)
+        {
+            // Remove all ref from memory
+            PlcServer.DBRemove(num);
+            // Remove GUI control
+            foreach (DBControl control in DBStack.Children)
+            {
+                if (control.DBNumber == num)
+                {
+                    DBStack.Children.Remove(control);
+                    break;
+                }            
+            }
+            // Clear memory
+            DB old = DBMemory.Find(o => o.number == num);
+            DBMemory.Remove(old);
+            old = null;
+        }
+
+        private void Label_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            RowLog.Height = RowLog.Height.Value == 0 ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
         }
 
         //#region WatchThread
@@ -960,31 +990,6 @@ namespace S7Lite
 
         //#endregion
 
-        private void lblAddDB_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
 
-            if (PlcServer.IsDbAvailable(Int32.Parse(txtDBNumber.Text)))
-            {
-                DB newdb = new DB(Int32.Parse(txtDBNumber.Text), new byte[DBMaxSize]);
-
-                PlcServer.AddDB(ref newdb);
-                DBControl dbcontrol = new DBControl(ref newdb);
-                DBStack.Children.Add(dbcontrol);
-                txtDBNumber.Text = PlcServer.GetAvailableDB().ToString();
-            }
-  
-        }
-
-        private void Label_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (RowLog.Height.Value == 0)
-            {
-                RowLog.Height = new GridLength(1, GridUnitType.Star);
-            }
-            else
-            {
-                RowLog.Height = new GridLength(0);
-            }
-        }
     }
 }

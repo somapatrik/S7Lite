@@ -18,6 +18,8 @@ namespace S7Lite
 
         public static bool IsRunning;
 
+        public static int MaxDBCount = 1024;
+
 
         public static Boolean StartPLCServer()
         {
@@ -40,10 +42,11 @@ namespace S7Lite
             IsRunning = false;
         }
 
+        #region DB add/remove
+
         public static void AddDB(ref DB newdb)
         {
             PLC_Memory.Add(newdb);
-
         }
 
         private static void RegisterDB()
@@ -53,6 +56,27 @@ namespace S7Lite
                 PLC.RegisterArea(S7Server.S7AreaDB, datablock.number, ref datablock.array, datablock.array.Length);
             }
         }
+
+        private static void UnregisterDB(int num)
+        {
+            if (PLC!=null)
+                PLC.UnregisterArea(S7Server.S7AreaDB, num);
+        }
+
+        public static void DBRemove(int DBNumber)
+        {
+            UnregisterDB(DBNumber);
+            DBRemove(PLC_Memory.Find(o => o.number == DBNumber));
+        }
+
+        public static void DBRemove(DB db)
+        {
+            PLC_Memory.Remove(db);
+        }
+
+        #endregion
+
+        #region DB available / search
 
         public static int GetAvailableDB()
         {
@@ -74,7 +98,10 @@ namespace S7Lite
 
         public static bool IsDbAvailable(int num)
         {
-            return !PLC_Memory.Exists(o => o.number == num );
+            return (!PLC_Memory.Exists(o => o.number == num )) & 
+                (num >= 1 & num <= MaxDBCount);
         }
+
+        #endregion
     }
 }

@@ -25,13 +25,11 @@ namespace S7Lite
         Thread watch;
         Thread read;
 
-        int DBSize = 1024;
-        int DBNumber;
         List<int> DB1UsedBytes = new List<int>();
 
+        int DBSize = 1024;
+        public int DBNumber;
         byte[] datablock;
-
-        DB DbObject;
 
         List<string> combotypes = new List<string> { "BIT", "BYTE", "CHAR", "WORD", "INT", "DWORD", "DINT", "REAL" };
 
@@ -68,11 +66,12 @@ namespace S7Lite
             get { return ReadingEnabled; }
         }
 
+        public event EventHandler DBRightClicked;
+
         public DBControl(ref DB db)
         {
             InitializeComponent();
 
-            DbObject = db;
             DBNumber = db.number;
             datablock = db.array;
             SetGui();
@@ -402,6 +401,19 @@ namespace S7Lite
         #endregion
 
         #region Window events
+
+        // DB show/hide
+        private void DbBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            GridData.Visibility = GridData.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        // DB context
+        private void DbBar_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (DBRightClicked != null)
+                DBRightClicked(this,null);
+        }
 
         private void Address_KeyDown(object sender, KeyEventArgs e)
         {
@@ -952,9 +964,5 @@ namespace S7Lite
 
         #endregion
 
-        private void DbBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            GridData.Visibility = GridData.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-        }
     }
 }

@@ -66,11 +66,11 @@
 
             <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="Collapse all"/>
 
-            
+
             <ScrollViewer Grid.Row="2" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" Height="auto">
                 <StackPanel x:Name="DBStack" Orientation="Vertical"/>
             </ScrollViewer>
-            
+
         </Grid>
         
         <!-- Log -->
@@ -101,6 +101,10 @@
             <Label x:Name="lbl_ProdNumber" Grid.Column="1" Foreground="WhiteSmoke" VerticalAlignment="Center" HorizontalAlignment="Center" Content="CPU 315-2 PN/DP"/>
 
         </Grid>
+        
+        <Grid x:Name="PopUpGrid" Grid.ColumnSpan="10" Grid.RowSpan="10" Panel.ZIndex="10">
 
+        </Grid>
+        
     </Grid>
 </Window>
