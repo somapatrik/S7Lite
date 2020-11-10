@@ -23,7 +23,7 @@ namespace S7Lite
 {
     public partial class MainWindow : Window
     {
-
+        // Max DBSize
         int DBMaxSize = 1024;
 
         // Memory with original DB values
@@ -33,7 +33,17 @@ namespace S7Lite
         {
             InitializeComponent();
             Logger.Log("[ -- APP START -- ]");
+
+            SetGUI();
+        }
+
+        private void SetGUI()
+        {
+            // Events
             txtDBNumber.TextChanged += TxtDBNumber_TextChanged;
+
+            // Load possible server IP
+            GetIp();
         }
 
         private void TxtDBNumber_TextChanged(object sender, TextChangedEventArgs e)
@@ -104,6 +114,30 @@ namespace S7Lite
         private void Label_MouseUp(object sender, MouseButtonEventArgs e)
         {
             RowLog.Height = RowLog.Height.Value == 0 ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+        }
+
+        private void GetIp()
+        {
+            cmb_ip.Items.Clear();
+            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
+            foreach (IPAddress ip in localIPs)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    cmb_ip.Items.Add(ip.ToString());
+            }
+            if (cmb_ip.HasItems) cmb_ip.SelectedIndex = 0;
+        }
+
+        private void cmb_ip_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PlcServer.PLC_IP = cmb_ip.SelectedValue.ToString();
+        }
+
+        private void Label_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            // Ini values
+
+            
         }
 
         //#region WatchThread
@@ -344,56 +378,6 @@ namespace S7Lite
         //    }
         //}
 
-        //private int GetLastFreeByte(int NeedLength = 1, bool FromMax = true, int StartFrom = 0)
-        //{
-
-        //    if (DB1UsedBytes.Count == 0)
-        //    {
-        //        return 0;
-        //    }
-        //    else {
-
-        //        // Start byte
-        //        int Start = 0;
-
-        //        if (FromMax)
-        //        {
-        //            Start = DB1UsedBytes.Max() + 1;  // First avaiable byte
-        //        }
-        //        else
-        //        {
-        //           // Test every byte from start value
-        //            bool TestNext = false; 
-
-        //            for (int ActByte = StartFrom; ActByte < DBMaxSize;ActByte++)
-        //            {
-        //                // Test space after every byte
-        //                for (int TestByte = ActByte; TestByte < (ActByte + NeedLength); TestByte++)
-        //                {
-        //                    if (DB1UsedBytes.Contains(TestByte))
-        //                    {
-        //                        TestNext = true; // There is not enough space  
-        //                        break;           // Try another byte in array
-        //                    }
-        //                    TestNext = false;
-        //                }
-        //                // Test finished = TextNext = false
-        //                if (!TestNext)
-        //                {
-        //                    Start = ActByte;
-        //                    break;
-        //                }
-        //            }
-        //        }
-
-        //        if ((Start + NeedLength) > (DBMaxSize))
-        //        {
-        //            return -1; // Out of db memory
-        //        }
-
-        //        return Start;
-        //    }
-        //}
 
         //#region Utils
 

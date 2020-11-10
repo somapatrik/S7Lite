@@ -10,7 +10,9 @@ namespace S7Lite
 {
     public static class PlcServer
     {
-        public static S7Server PLC; //= new S7Server();
+        public static S7Server PLC = new S7Server();
+
+        public static S7Client Client = new S7Client();
 
         public static string PLC_IP;
 
@@ -20,13 +22,13 @@ namespace S7Lite
 
         public static int MaxDBCount = 1024;
 
-
-        public static Boolean StartPLCServer()
+        public static bool StartPLCServer()
         {
-            if (PLC == null)
-                PLC = new S7Server();
+            //if (PLC == null)
+            //    PLC = new S7Server();
 
             bool error = PLC.StartTo(PLC_IP) == 0 ? false : true;
+
             IsRunning = error ? false : true;
 
             if (IsRunning)
@@ -35,11 +37,22 @@ namespace S7Lite
             return IsRunning;
         }
 
+        public static bool StartClient()
+        {
+            return Client.ConnectTo(PLC_IP, 0, 2) == 0 ? true : false;
+        }
+
         public static void StopPLCServer()
         {
+            DisconnectClient();
             PLC.Stop();
             PLC.CpuStatus = 4;
             IsRunning = false;
+        }
+
+        public static void DisconnectClient()
+        {
+            Client.Disconnect();
         }
 
         #region DB add/remove
@@ -49,7 +62,7 @@ namespace S7Lite
             PLC_Memory.Add(newdb);
         }
 
-        private static void RegisterDB()
+        public static void RegisterDB()
         {
             foreach(DB datablock in PLC_Memory)
             {

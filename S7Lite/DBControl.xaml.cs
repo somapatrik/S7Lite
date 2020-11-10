@@ -340,8 +340,7 @@ namespace S7Lite
         private void SetGui()
         {
             AddRow();
-         //   GetIp();
-            lblUsedBytes.Content = "0";
+            lblUsedBytes.Content = "";
             lblDBNumber.Content = "DB " + DBNumber;
         }
 
