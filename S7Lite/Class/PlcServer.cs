@@ -24,9 +24,6 @@ namespace S7Lite
 
         public static bool StartPLCServer()
         {
-            //if (PLC == null)
-            //    PLC = new S7Server();
-
             bool error = PLC.StartTo(PLC_IP) == 0 ? false : true;
 
             IsRunning = error ? false : true;

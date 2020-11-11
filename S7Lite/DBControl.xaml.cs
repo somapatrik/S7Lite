@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Snap7;
 
 namespace S7Lite
 {
@@ -25,7 +26,7 @@ namespace S7Lite
         Thread watch;
         Thread read;
 
-        List<int> DB1UsedBytes = new List<int>();
+        List<int> DBUsedBytes = new List<int>();
 
         int DBSize = 1024;
         public int DBNumber;
@@ -74,7 +75,34 @@ namespace S7Lite
 
             DBNumber = db.number;
             datablock = db.array;
+
             SetGui();
+        }
+
+        public void Activate()
+        {
+            // Disable GUI
+            //DisableAddresses();
+            //DisableCombos();
+            //DisableActValues();
+
+            // Write act values to byte array
+            WriteIniValues();
+
+            // Start reading 
+            EnableReading = true;
+        }
+
+        public void Deactivate()
+        {
+            EnableAddresses();
+            EnableCombos();
+            EnableActValues();
+        }
+
+        public void WriteIniValues()
+        {
+
         }
 
         #region WatchThread
@@ -217,125 +245,131 @@ namespace S7Lite
         #endregion
 
         #region ReadThread
-        // Every screen needs it´s own thread
 
+        // Every screen needs it´s own thread
         private void StartReadingThread()
         {
-            try
-            {
-                if (read != null)
-                {
-                    Logger.Log("Reading thread already exists");
-
-                    if (!read.IsAlive)
-                    {
-                        Logger.Log("Starting reading thread");
-                        read.Start();
-                    }
-                    else
-                    {
-                        Logger.Log("Creating new reading thread");
-                        read = new Thread(() => { WatchThread(); });
-                        Logger.Log("Starting reading thread");
-                        read.Start();
-                    }
-
-                    Logger.Log("Reading thread started");
+            read = new Thread(() => {
+                while (ReadingEnabled) { 
+                    ReadingThread();
                 }
-            }
-            catch (Exception ex)
-            {
-
-            }
+            });
+            read.Start();
         }
 
         private void StopReadingThread()
         {
-            if (read != null)
-            {
-                if (read.IsAlive)
-                {
-                    Logger.Log("Trying to stop reading thread");
-
-                    Task killwatch = new Task(() =>
-                    {
-                        read.Join();
-                        return;
-                    });
-                }
-            }
-
-            Logger.Log("Reading thread is dead");
+          
         }
 
         private void ReadingThread()
         {
-            while (EnableReading)
-            {
-                int rows = GridData.RowDefinitions.Count;
-
-                for (int i = 0; i <= rows; i++)
-                {
-
-                }
-
-            }
-        }
-
-        #endregion
-
-        private void btn_connect_Click(object sender, RoutedEventArgs e)
-        {
             try
             {
+                int rowcount = 0;
+                GridData.Dispatcher.Invoke(() => { rowcount = GridData.RowDefinitions.Count; });
 
-                if (!PlcServer.IsRunning)
+                if (rowcount > 1)
                 {
-                    if (PlcServer.StartPLCServer())
+                    for (int i = 0; i < rowcount - 1; i++)
                     {
-                      //  ConsoleLog("Server started at " + PlcServer.PLC_IP);
-                       // btn_connect.Content = "Stop";
-                        DisableCombos();
-                        DisableAddresses();
-                        DisableActValues();
+                        // Get GUI elements
+                        TextBox txtaddress = null;
+                        ComboBox combo = null;
+                        TextBox outvalue = null;
+
+                        GridData.Dispatcher.Invoke(()=> { 
+
+                            txtaddress = GetTextBox("blcaddress_" + i); 
+                            combo = GetComboBox("cmbtype_" + i);
+                            outvalue = GetTextBox("txtvalue_" + i);
+                        
+
+                            if (txtaddress != null || combo != null || outvalue != null)
+                            {
+                            
+                            int address = (int) txtaddress.Tag;
+
+                            string repre = "";
+
+                            switch (combo.SelectedValue)
+                            {
+                                //case "BIT":
+                                case "CHAR":
+                                    repre = S7.GetCharsAt(datablock, address, 1);
+                                    break;
+                                case "BYTE":
+                                    repre = S7.GetByteAt(datablock, address).ToString();
+                                    break;
+                                case "INT":
+                                    repre = S7.GetIntAt(datablock, address).ToString();
+                                    break;
+                                case "DINT":
+                                    repre = S7.GetDIntAt(datablock, address).ToString();
+                                    break;
+                                case "WORD":
+                                    repre = S7.GetWordAt(datablock, address).ToString();
+                                    break;
+                                case "DWORD":
+                                    repre = S7.GetDWordAt(datablock, address).ToString();
+                                    break;
+                                case "REAL":
+                                    repre = S7.GetRealAt(datablock, address).ToString();
+                                    break;
+                            }
+
+                            outvalue.Text = "píčo";
+                        
+                            }
+
+                        });
                     }
-
-                }
-                else
-                {
-                    PlcServer.StopPLCServer();
-
-                   // ConsoleLog("Server stopped");
-                   // btn_connect.Content = "Start";
-                    EnableCombos();
-                    EnableAddresses();
-                    EnableActValues();
                 }
 
-            }
-            catch (Exception ex)
+            } catch(Exception ex)
             {
-                Logger.Log("[" + MethodBase.GetCurrentMethod().Name + "]" + ex.Message, Logger.LogState.Error);
+
             }
-        }      
+
+        }
+        #endregion
+
+        //private void btn_connect_Click(object sender, RoutedEventArgs e)
+        //{
+        //    try
+        //    {
+
+        //        if (!PlcServer.IsRunning)
+        //        {
+        //            if (PlcServer.StartPLCServer())
+        //            {
+        //              //  ConsoleLog("Server started at " + PlcServer.PLC_IP);
+        //               // btn_connect.Content = "Stop";
+        //                DisableCombos();
+        //                DisableAddresses();
+        //                DisableActValues();
+        //            }
+
+        //        }
+        //        else
+        //        {
+        //            PlcServer.StopPLCServer();
+
+        //           // ConsoleLog("Server stopped");
+        //           // btn_connect.Content = "Start";
+        //            EnableCombos();
+        //            EnableAddresses();
+        //            EnableActValues();
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.Log("[" + MethodBase.GetCurrentMethod().Name + "]" + ex.Message, Logger.LogState.Error);
+        //    }
+        //}      
 
         #region Utils
-
-        //public void ConsoleLog(string msg)
-        //{
-        //    if (!Dispatcher.CheckAccess())
-        //    {
-        //        LogConsole.Dispatcher.Invoke(() => {
-        //            LogConsole.Text += DateTime.Now.ToString("T[HH:mm:ss] ") + msg + Environment.NewLine;
-        //            Scroll.ScrollToBottom();
-        //        });
-        //    }
-        //    else
-        //    {
-        //        LogConsole.Text += DateTime.Now.ToString("[HH:mm:ss] ") + msg + Environment.NewLine;
-        //        Scroll.ScrollToBottom();
-        //    }
-        //}
 
         private void SetGui()
         {
@@ -346,7 +380,7 @@ namespace S7Lite
 
         private void SetUsedBytes()
         {
-            lblUsedBytes.Content = DB1UsedBytes.Count.ToString() + "/" + DBSize;
+            lblUsedBytes.Content = DBUsedBytes.Count.ToString() + "/" + DBSize;
         }
 
         #endregion
@@ -358,9 +392,9 @@ namespace S7Lite
             string log = "";
             for (int i = StartByte; i <= (StartByte + (ByteLength - 1)); i++)
             {
-                if (!DB1UsedBytes.Contains(i))
+                if (!DBUsedBytes.Contains(i))
                 {
-                    DB1UsedBytes.Add(i);
+                    DBUsedBytes.Add(i);
                     log += i + " | ";
                 }
             }
@@ -371,7 +405,7 @@ namespace S7Lite
                 Logger.Log("Using bytes: " + log);
             }
 
-            DB1UsedBytes.Sort();
+            DBUsedBytes.Sort();
             SetUsedBytes();
         }
 
@@ -380,9 +414,9 @@ namespace S7Lite
             string log = "";
             for (int i = StartByte; i <= (StartByte + (ByteLength - 1)); i++)
             {
-                if (DB1UsedBytes.Contains(i))
+                if (DBUsedBytes.Contains(i))
                 {
-                    DB1UsedBytes.Remove(i);
+                    DBUsedBytes.Remove(i);
                     log += i + " | ";
                 }
             }
@@ -393,7 +427,7 @@ namespace S7Lite
                 Logger.Log("Removing bytes: " + log);
             }
 
-            DB1UsedBytes.Sort();
+            DBUsedBytes.Sort();
             SetUsedBytes();
         }
 
@@ -625,7 +659,7 @@ namespace S7Lite
         private int GetLastFreeByte(int NeedLength = 1, bool FromMax = true, int StartFrom = 0)
         {
 
-            if (DB1UsedBytes.Count == 0)
+            if (DBUsedBytes.Count == 0)
             {
                 return 0;
             }
@@ -637,7 +671,7 @@ namespace S7Lite
 
                 if (FromMax)
                 {
-                    Start = DB1UsedBytes.Max() + 1;  // First avaiable byte
+                    Start = DBUsedBytes.Max() + 1;  // First avaiable byte
                 }
                 else
                 {
@@ -649,7 +683,7 @@ namespace S7Lite
                         // Test space after every byte
                         for (int TestByte = ActByte; TestByte < (ActByte + NeedLength); TestByte++)
                         {
-                            if (DB1UsedBytes.Contains(TestByte))
+                            if (DBUsedBytes.Contains(TestByte))
                             {
                                 TestNext = true; // There is not enough space  
                                 break;           // Try another byte in array
@@ -739,7 +773,6 @@ namespace S7Lite
         // Data type changes
         private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             ComboBox actcombo = (ComboBox)sender;
 
             int selectedrow = Int32.Parse(actcombo.Name.Substring(actcombo.Name.IndexOf('_') + 1));
