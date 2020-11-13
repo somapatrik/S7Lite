@@ -11,19 +11,26 @@ namespace S7Lite
     public static class PlcServer
     {
         public static S7Server PLC = new S7Server();
+        public static List<DB> PLC_Memory = new List<DB>();
+        public static bool IsRunning;
+        public static string PLC_IP;
 
         public static S7Client Client = new S7Client();
 
-        public static string PLC_IP;
-
-        public static List<DB> PLC_Memory = new List<DB>();
-
-        public static bool IsRunning;
-
         public static int MaxDBCount = 1024;
+
+        public static S7Server.TSrvCallback PlcCallBack;
+
+        static void PlcEventCallBack(IntPtr usrPtr, ref S7Server.USrvEvent Event, int Size)
+        {
+
+        }
 
         public static bool StartPLCServer()
         {
+            PlcCallBack = new S7Server.TSrvCallback(PlcEventCallBack);
+            PLC.SetEventsCallBack(PlcCallBack, IntPtr.Zero);
+
             bool error = PLC.StartTo(PLC_IP) == 0 ? false : true;
 
             IsRunning = error ? false : true;

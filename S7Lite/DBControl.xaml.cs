@@ -288,41 +288,41 @@ namespace S7Lite
                             if (txtaddress != null || combo != null || outvalue != null)
                             {
                             
-                            int address = (int) txtaddress.Tag;
+                                int address = Int32.Parse(txtaddress.Tag.ToString());
 
-                            string repre = "";
+                                string repre = "";
 
-                            switch (combo.SelectedValue)
-                            {
-                                //case "BIT":
-                                case "CHAR":
-                                    repre = S7.GetCharsAt(datablock, address, 1);
-                                    break;
-                                case "BYTE":
-                                    repre = S7.GetByteAt(datablock, address).ToString();
-                                    break;
-                                case "INT":
-                                    repre = S7.GetIntAt(datablock, address).ToString();
-                                    break;
-                                case "DINT":
-                                    repre = S7.GetDIntAt(datablock, address).ToString();
-                                    break;
-                                case "WORD":
-                                    repre = S7.GetWordAt(datablock, address).ToString();
-                                    break;
-                                case "DWORD":
-                                    repre = S7.GetDWordAt(datablock, address).ToString();
-                                    break;
-                                case "REAL":
-                                    repre = S7.GetRealAt(datablock, address).ToString();
-                                    break;
-                            }
+                                switch (combo.SelectedValue)
+                                {
+                                    //case "BIT":
+                                    case "CHAR":
+                                        repre = S7.GetCharsAt(datablock, address, 1);
+                                        break;
+                                    case "BYTE":
+                                        repre = S7.GetByteAt(datablock, address).ToString();
+                                        break;
+                                    case "INT":
+                                        repre = S7.GetIntAt(datablock, address).ToString();
+                                        break;
+                                    case "DINT":
+                                        repre = S7.GetDIntAt(datablock, address).ToString();
+                                        break;
+                                    case "WORD":
+                                        repre = S7.GetWordAt(datablock, address).ToString();
+                                        break;
+                                    case "DWORD":
+                                        repre = S7.GetDWordAt(datablock, address).ToString();
+                                        break;
+                                    case "REAL":
+                                        repre = S7.GetRealAt(datablock, address).ToString();
+                                        break;
+                                }
 
-                            outvalue.Text = "píčo";
-                        
+                                outvalue.Text = repre;
                             }
 
                         });
+                        Thread.Sleep(10);
                     }
                 }
 
@@ -334,40 +334,6 @@ namespace S7Lite
         }
         #endregion
 
-        //private void btn_connect_Click(object sender, RoutedEventArgs e)
-        //{
-        //    try
-        //    {
-
-        //        if (!PlcServer.IsRunning)
-        //        {
-        //            if (PlcServer.StartPLCServer())
-        //            {
-        //              //  ConsoleLog("Server started at " + PlcServer.PLC_IP);
-        //               // btn_connect.Content = "Stop";
-        //                DisableCombos();
-        //                DisableAddresses();
-        //                DisableActValues();
-        //            }
-
-        //        }
-        //        else
-        //        {
-        //            PlcServer.StopPLCServer();
-
-        //           // ConsoleLog("Server stopped");
-        //           // btn_connect.Content = "Start";
-        //            EnableCombos();
-        //            EnableAddresses();
-        //            EnableActValues();
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.Log("[" + MethodBase.GetCurrentMethod().Name + "]" + ex.Message, Logger.LogState.Error);
-        //    }
-        //}      
 
         #region Utils
 
