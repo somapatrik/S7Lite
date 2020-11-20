@@ -90,7 +90,7 @@ namespace S7Lite
             WriteIniValues();
 
             // Start reading 
-            EnableReading = true;
+            //EnableReading = true;
         }
 
         public void Deactivate()
@@ -707,6 +707,7 @@ namespace S7Lite
             // DB value
             value.Name = "txtvalue_" + lastdatarow;
             value.Style = Resources["ValueBox"] as Style;
+            value.IsReadOnly = true;
 
             // Input value
             inputvalue.Name = "inputvalue_" + lastdatarow;

@@ -15,22 +15,35 @@ namespace S7Lite
         public static bool IsRunning;
         public static string PLC_IP;
 
-        public static S7Client Client = new S7Client();
-
         public static int MaxDBCount = 1024;
+        
+        public static S7Server.TSrvCallback PlcCallBack = new S7Server.TSrvCallback(PlcEventCallBack);
 
-        public static S7Server.TSrvCallback PlcCallBack;
+        public static event EventHandler UpdatedDB;
 
         static void PlcEventCallBack(IntPtr usrPtr, ref S7Server.USrvEvent Event, int Size)
         {
+            // New data on server
+            if ((Event.EvtCode == S7Server.evcDataWrite) &&             
+                (Event.EvtRetCode == 0) &&                  // No error
+                (Event.EvtParam1 == S7Server.S7AreaDB))     // Is DB event
+            {
+                EventHandler handler = UpdatedDB;
+                if (handler != null)
+                {
+                    handler(Event.EvtParam2,null);
+                }
+            }
+        }
 
+        public static void IniServer()
+        {
+            //PlcCallBack = new S7Server.TSrvCallback(PlcEventCallBack);
+            PLC.SetEventsCallBack(PlcCallBack, IntPtr.Zero);
         }
 
         public static bool StartPLCServer()
         {
-            PlcCallBack = new S7Server.TSrvCallback(PlcEventCallBack);
-            PLC.SetEventsCallBack(PlcCallBack, IntPtr.Zero);
-
             bool error = PLC.StartTo(PLC_IP) == 0 ? false : true;
 
             IsRunning = error ? false : true;
@@ -41,22 +54,11 @@ namespace S7Lite
             return IsRunning;
         }
 
-        public static bool StartClient()
-        {
-            return Client.ConnectTo(PLC_IP, 0, 2) == 0 ? true : false;
-        }
-
         public static void StopPLCServer()
         {
-            DisconnectClient();
             PLC.Stop();
             PLC.CpuStatus = 4;
             IsRunning = false;
-        }
-
-        public static void DisconnectClient()
-        {
-            Client.Disconnect();
         }
 
         #region DB add/remove
