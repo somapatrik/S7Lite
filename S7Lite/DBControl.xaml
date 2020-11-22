@@ -25,9 +25,11 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" x:Name="lblDBNumber" Foreground="WhiteSmoke" Content="DB control"  Style="{StaticResource DbBar_Name}"/>
             <Label Grid.Column="1" x:Name="lblUsedBytes" Foreground="WhiteSmoke" Content="Used bytes" Style="{StaticResource DbBar_Name}"/>
+            <Label Grid.Column="2" x:Name="lblTest" Foreground="WhiteSmoke" Content="Test button" Style="{StaticResource DbBar_Name}" MouseLeftButtonUp="lblTest_MouseLeftButtonUp"/>
         </Grid>
 
         <Grid Grid.Row="1" Height="auto" x:Name="GridData" VerticalAlignment="Top" Visibility="Collapsed">

@@ -34,6 +34,8 @@ namespace S7Lite
 
         List<string> combotypes = new List<string> { "BIT", "BYTE", "CHAR", "WORD", "INT", "DWORD", "DINT", "REAL" };
 
+        #region Thread prop
+
         private Boolean WatchEnabled;
         private Boolean EnableWatch
         {
@@ -67,6 +69,8 @@ namespace S7Lite
             get { return ReadingEnabled; }
         }
 
+        #endregion
+
         public event EventHandler DBRightClicked;
 
         public DBControl(ref DB db)
@@ -82,12 +86,14 @@ namespace S7Lite
         public void Activate()
         {
             // Disable GUI
-            //DisableAddresses();
-            //DisableCombos();
-            //DisableActValues();
+            DisableAddresses();
+            DisableCombos();
+            DisableActValues();
+
+            WriteValue(1);
 
             // Write act values to byte array
-            WriteIniValues();
+            //WriteIniValues();
 
             // Start reading 
             //EnableReading = true;
@@ -100,9 +106,84 @@ namespace S7Lite
             EnableActValues();
         }
 
-        public void WriteIniValues()
+        private void ReadValue(int index)
         {
+            // Get address
+            int address = Int32.Parse(GetTextBox("blcaddress_" + index).Text);
+            // Get new value
+            TextBox output = GetTextBox("txtvalue_" + index);
+            // Type
+            string type = GetComboBox("cmbtype_" + index).SelectedValue.ToString();
 
+            switch (type)
+            {
+                case "BIT":
+                    break;
+                case "BYTE":
+                    output.Text = S7.GetByteAt(datablock, address).ToString();
+                    break;
+                case "CHAR":
+                    output.Text = S7.GetCharsAt(datablock, address, 1);
+                    break;
+                case "INT":
+                    output.Text = S7.GetIntAt(datablock, address).ToString();
+                    break;
+                case "WORD":
+                    output.Text = S7.GetWordAt(datablock, address).ToString();
+                    break;
+                case "DINT":
+                    output.Text = S7.GetDIntAt(datablock, address).ToString();
+                    break;
+                case "DWORD":
+                    output.Text = S7.GetDWordAt(datablock, address).ToString();
+                    break;
+                case "REAL":
+                    output.Text = S7.GetRealAt(datablock, address).ToString();
+                    break;
+            }
+        }
+
+        private void lblTest_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            WriteValue(1);
+        }
+
+        public void WriteValue(int index)
+        {
+            // Get address
+            int address = Int32.Parse(GetTextBox("blcaddress_" + index).Text);
+            // Get value to write
+            string input = GetTextBox("inputvalue_" + index).Text;
+            // Type
+            string type = GetComboBox("cmbtype_" + index).SelectedValue.ToString();
+
+            switch (type)
+            {
+                case "BIT":
+                    break;
+                case "BYTE":
+                    S7.SetByteAt(datablock, address, byte.Parse(input));
+                    break;
+                case "CHAR":
+                    S7.SetCharsAt(datablock, address, input[0].ToString());
+                    break;
+                case "INT":
+                    S7.SetIntAt(datablock, address, short.Parse(input));
+                    break;
+                case "WORD":
+                    S7.SetWordAt(datablock, address, ushort.Parse(input));
+                    break;
+                case "DINT":
+                    S7.SetDIntAt(datablock, address, int.Parse(input));
+                    break;
+                case "DWORD":
+                    S7.SetDWordAt(datablock, address, uint.Parse(input));
+                    break;
+                case "REAL":
+                    S7.SetRealAt(datablock, address, float.Parse(input));
+                    break;
+            }
+            ReadValue(index);
         }
 
         #region WatchThread
@@ -962,6 +1043,7 @@ namespace S7Lite
         }
 
         #endregion
+
 
     }
 }

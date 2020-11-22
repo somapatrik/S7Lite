@@ -78,6 +78,10 @@ namespace S7Lite
             {
                 PlcServer.StartPLCServer();
                 lbl_start.Content = "STOP";
+                foreach(DBControl db in DBStack.Children)
+                {
+                    db.Activate();
+                }
             }
             else
             {
