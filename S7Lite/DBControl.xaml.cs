@@ -22,54 +22,20 @@ namespace S7Lite
 {
     public partial class DBControl : UserControl
     {
-
-        Thread watch;
-        Thread read;
-
+        List<int> UsedIndexes = new List<int>();
         List<int> DBUsedBytes = new List<int>();
 
+        // Max DBSize
         int DBSize = 1024;
+
+        // DB #
         public int DBNumber;
+
+        // DB memory
         byte[] datablock;
 
+        // Combo items
         List<string> combotypes = new List<string> { "BIT", "BYTE", "CHAR", "WORD", "INT", "DWORD", "DINT", "REAL" };
-
-        #region Thread prop
-
-        private Boolean WatchEnabled;
-        private Boolean EnableWatch
-        {
-            set
-            {
-                WatchEnabled = value;
-
-                if (value)
-                    StartWatchThread();
-                else
-                    StopWatchThread();
-            }
-
-            get
-            {
-                return WatchEnabled;
-            }
-        }
-
-        private Boolean ReadingEnabled;
-        private Boolean EnableReading
-        {
-            set
-            {
-                ReadingEnabled = value;
-                if (value)
-                    StartReadingThread();
-                else
-                    StopReadingThread();
-            }
-            get { return ReadingEnabled; }
-        }
-
-        #endregion
 
         public event EventHandler DBRightClicked;
 
@@ -89,14 +55,6 @@ namespace S7Lite
             DisableAddresses();
             DisableCombos();
             DisableActValues();
-
-            WriteValue(1);
-
-            // Write act values to byte array
-            //WriteIniValues();
-
-            // Start reading 
-            //EnableReading = true;
         }
 
         public void Deactivate()
@@ -106,46 +64,19 @@ namespace S7Lite
             EnableActValues();
         }
 
-        private void ReadValue(int index)
-        {
-            // Get address
-            int address = Int32.Parse(GetTextBox("blcaddress_" + index).Text);
-            // Get new value
-            TextBox output = GetTextBox("txtvalue_" + index);
-            // Type
-            string type = GetComboBox("cmbtype_" + index).SelectedValue.ToString();
 
-            switch (type)
+        public async void UpdateDB()
+        {
+            await Task.Run(() =>
             {
-                case "BIT":
-                    break;
-                case "BYTE":
-                    output.Text = S7.GetByteAt(datablock, address).ToString();
-                    break;
-                case "CHAR":
-                    output.Text = S7.GetCharsAt(datablock, address, 1);
-                    break;
-                case "INT":
-                    output.Text = S7.GetIntAt(datablock, address).ToString();
-                    break;
-                case "WORD":
-                    output.Text = S7.GetWordAt(datablock, address).ToString();
-                    break;
-                case "DINT":
-                    output.Text = S7.GetDIntAt(datablock, address).ToString();
-                    break;
-                case "DWORD":
-                    output.Text = S7.GetDWordAt(datablock, address).ToString();
-                    break;
-                case "REAL":
-                    output.Text = S7.GetRealAt(datablock, address).ToString();
-                    break;
-            }
-        }
-
-        private void lblTest_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            WriteValue(1);
+                GridData.Dispatcher.Invoke(() =>
+                {
+                    foreach (int i in UsedIndexes)
+                    {
+                        ReadValue(i);  
+                    }
+                });
+            });
         }
 
         public void WriteValue(int index)
@@ -186,234 +117,42 @@ namespace S7Lite
             ReadValue(index);
         }
 
-        #region WatchThread
-        // TODO: to a seperated class
-
-        private void StartWatchThread()
+        private void ReadValue(int index)
         {
-            try
+            // Get address
+            int address = Int32.Parse(GetTextBox("blcaddress_" + index).Text);
+            // Get output box
+            TextBox output = GetTextBox("txtvalue_" + index);
+            // Type
+            string type = GetComboBox("cmbtype_" + index).SelectedValue.ToString();
+
+            switch (type)
             {
-                if (watch != null)
-                {
-                    Logger.Log("Watch thread already exists");
-
-                    if (!watch.IsAlive)
-                    {
-                        Logger.Log("Starting watch thread");
-                        watch.Start();
-                    }
-
-                }
-                else
-                {
-                    Logger.Log("Creating new watch thread");
-                    watch = new Thread(() => { WatchThread(); });
-                    Logger.Log("Starting watch thread");
-                    watch.Start();
-                }
-
-                Logger.Log("Watch thread started");
-
+                case "BIT":
+                    break;
+                case "BYTE":
+                    output.Text = S7.GetByteAt(datablock, address).ToString();
+                    break;
+                case "CHAR":
+                    output.Text = S7.GetCharsAt(datablock, address, 1);
+                    break;
+                case "INT":
+                    output.Text = S7.GetIntAt(datablock, address).ToString();
+                    break;
+                case "WORD":
+                    output.Text = S7.GetWordAt(datablock, address).ToString();
+                    break;
+                case "DINT":
+                    output.Text = S7.GetDIntAt(datablock, address).ToString();
+                    break;
+                case "DWORD":
+                    output.Text = S7.GetDWordAt(datablock, address).ToString();
+                    break;
+                case "REAL":
+                    output.Text = S7.GetRealAt(datablock, address).ToString();
+                    break;
             }
-            catch (Exception ex)
-            {
-             //   ConsoleLog(ex.Message);
-            }
         }
-
-        private void StopWatchThread()
-        {
-            if (watch != null)
-            {
-                if (watch.IsAlive)
-                {
-                    Logger.Log("Trying to stop watch thread");
-
-                    Task killwatch = new Task(() =>
-                    {
-                        watch.Join();
-                        return;
-                    });
-                }
-            }
-
-            Logger.Log("Watch thread is dead");
-        }
-
-        private void WatchThread()
-        {
-            //try
-            //{
-            //    while (WatchEnabled)
-            //    {
-            //        // Server status
-            //        lbl_Server.Dispatcher.Invoke(() =>
-            //        {
-            //            if (PlcServer.PLC != null)
-            //            {
-            //                switch (PlcServer.PLC.ServerStatus)
-            //                {
-            //                    case 1:
-            //                        lbl_Server.Style = Resources["TopButtonOK"] as Style;
-            //                        lbl_Server.Content = "Server";
-            //                        break;
-            //                    case 2:
-            //                        lbl_Server.Style = Resources["TopButtonNOK"] as Style;
-            //                        lbl_Server.Content = "Server error";
-            //                        break;
-            //                    case 0:
-            //                        lbl_Server.Style = Resources["TopButtonNOK"] as Style;
-            //                        lbl_Server.Content = "Server stop";
-            //                        break;
-            //                }
-            //            }
-            //            else
-            //            {
-            //                lbl_Server.Style = Resources["TopButton"] as Style;
-            //            }
-            //        });
-
-            //        // Reading status
-            //        lbl_Read.Dispatcher.Invoke(() =>
-            //        {
-            //            if (read != null)
-            //            {
-            //                lbl_Read.Style = read.IsAlive ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
-            //            }
-            //            else
-            //            {
-            //                lbl_Read.Style = Resources["TopButton"] as Style;
-            //            }
-            //        });
-
-            //        // CPU Status
-            //        lbl_Online.Dispatcher.Invoke(() =>
-            //        {
-            //            if (PlcServer.PLC != null)
-            //            {
-            //                switch (PlcServer.PLC.CpuStatus)
-            //                {
-            //                    case 0:
-            //                        lbl_Online.Style = Resources["TopButtonNOK"] as Style;
-            //                        lbl_Online.Content = "CPU Unkown";
-            //                        break;
-            //                    case 4:
-            //                        lbl_Online.Style = Resources["TopButtonNOK"] as Style;
-            //                        lbl_Online.Content = "CPU in STOP";
-            //                        break;
-            //                    case 8:
-            //                        lbl_Online.Style = Resources["TopButtonOK"] as Style;
-            //                        lbl_Online.Content = "CPU in RUN";
-            //                        break;
-            //                }
-            //            }
-            //            else
-            //            {
-            //                lbl_Online.Style = Resources["TopButton"] as Style;
-            //            }
-            //        });
-
-            //    }
-
-            //}
-            //catch (Exception ex)
-            //{
-            //    Logger.Log("Watch thread error: " + ex.Message, Logger.LogState.Error);
-            //    ConsoleLog("Watch thread error: " + ex.Message);
-            //}
-        }
-
-        #endregion
-
-        #region ReadThread
-
-        // Every screen needs it´s own thread
-        private void StartReadingThread()
-        {
-            read = new Thread(() => {
-                while (ReadingEnabled) { 
-                    ReadingThread();
-                }
-            });
-            read.Start();
-        }
-
-        private void StopReadingThread()
-        {
-          
-        }
-
-        private void ReadingThread()
-        {
-            try
-            {
-                int rowcount = 0;
-                GridData.Dispatcher.Invoke(() => { rowcount = GridData.RowDefinitions.Count; });
-
-                if (rowcount > 1)
-                {
-                    for (int i = 0; i < rowcount - 1; i++)
-                    {
-                        // Get GUI elements
-                        TextBox txtaddress = null;
-                        ComboBox combo = null;
-                        TextBox outvalue = null;
-
-                        GridData.Dispatcher.Invoke(()=> { 
-
-                            txtaddress = GetTextBox("blcaddress_" + i); 
-                            combo = GetComboBox("cmbtype_" + i);
-                            outvalue = GetTextBox("txtvalue_" + i);
-                        
-
-                            if (txtaddress != null || combo != null || outvalue != null)
-                            {
-                            
-                                int address = Int32.Parse(txtaddress.Tag.ToString());
-
-                                string repre = "";
-
-                                switch (combo.SelectedValue)
-                                {
-                                    //case "BIT":
-                                    case "CHAR":
-                                        repre = S7.GetCharsAt(datablock, address, 1);
-                                        break;
-                                    case "BYTE":
-                                        repre = S7.GetByteAt(datablock, address).ToString();
-                                        break;
-                                    case "INT":
-                                        repre = S7.GetIntAt(datablock, address).ToString();
-                                        break;
-                                    case "DINT":
-                                        repre = S7.GetDIntAt(datablock, address).ToString();
-                                        break;
-                                    case "WORD":
-                                        repre = S7.GetWordAt(datablock, address).ToString();
-                                        break;
-                                    case "DWORD":
-                                        repre = S7.GetDWordAt(datablock, address).ToString();
-                                        break;
-                                    case "REAL":
-                                        repre = S7.GetRealAt(datablock, address).ToString();
-                                        break;
-                                }
-
-                                outvalue.Text = repre;
-                            }
-
-                        });
-                        Thread.Sleep(10);
-                    }
-                }
-
-            } catch(Exception ex)
-            {
-
-            }
-
-        }
-        #endregion
 
 
         #region Utils
@@ -488,13 +227,14 @@ namespace S7Lite
             GridData.Visibility = GridData.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        // DB context
+        // DB context event
         private void DbBar_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (DBRightClicked != null)
                 DBRightClicked(this,null);
         }
 
+        // Address key
         private void Address_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -547,15 +287,6 @@ namespace S7Lite
                         Logger.Log(address.Name + " value: " + address.Text + " is out of range");
                 }
             }
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            PlcServer.StopPLCServer();
-
-            EnableWatch = false;
-
-            Logger.Log("[ -- APP CLOSE -- ]");
         }
 
         #endregion
@@ -812,6 +543,8 @@ namespace S7Lite
 
             int z = lastdatarow * (-1);
             Grid.SetZIndex(combo, z);
+
+            UsedIndexes.Add(lastdatarow);
 
             //ScrollData.ScrollToBottom();
 

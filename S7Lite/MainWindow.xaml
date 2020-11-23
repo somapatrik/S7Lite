@@ -53,21 +53,19 @@
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <TextBox Grid.Row="0" Grid.Column="0" Text="1" x:Name="txtDBNumber" Style="{StaticResource InputBox}"/>
-            <Label Grid.Row="0" Grid.Column="1" Content="New DB" x:Name="lblAddDB" MouseLeftButtonDown="lblAddDB_MouseLeftButtonDown" Style="{StaticResource StartButton}" />
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtDBName" Style="{StaticResource InputBox}"/>
+            <Label Grid.Row="0" Grid.Column="2" Content="Create DB" x:Name="lblAddDB" MouseLeftButtonDown="lblAddDB_MouseLeftButtonDown" Style="{StaticResource StartButton}" />
 
-            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="Collapse all"/>
-
-
-            <ScrollViewer Grid.Row="2" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" Height="auto">
+            <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" Height="auto">
                 <StackPanel x:Name="DBStack" Orientation="Vertical"/>
             </ScrollViewer>
 

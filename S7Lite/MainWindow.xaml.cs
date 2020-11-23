@@ -44,8 +44,14 @@ namespace S7Lite
         {
             try
             {
-                int s = (int)sender;
-                MessageBox.Show(s.ToString());
+                Logger.Log("Client updated DB " + sender.ToString());
+
+                foreach (DBControl db in DBStack.Children)
+                {
+                    if (db.DBNumber == (int)sender)
+                        db.UpdateDB();
+                }
+
             } catch (Exception ex)
             {
                 Logger.Log(ex.Message, Logger.LogState.Error);
@@ -61,6 +67,10 @@ namespace S7Lite
 
             // Load possible server IP
             GetIp();
+
+            // Disable start
+            lbl_start.IsEnabled = false;
+
         }
 
         #region GUI events
@@ -120,6 +130,8 @@ namespace S7Lite
                     dbcontrol.DBRightClicked += Dbcontrol_DBRightClicked;
                     DBStack.Children.Add(dbcontrol);
 
+                    CheckDBStart();
+
                     txtDBNumber.Text = PlcServer.GetAvailableDB().ToString();
                 }
                 else
@@ -146,9 +158,12 @@ namespace S7Lite
         // DB Control right click event
         private void Dbcontrol_DBRightClicked(object sender, EventArgs e)
         {
-            PopupDB pop = new PopupDB(((DBControl)sender).DBNumber);
-            PopUpGrid.Children.Add(pop);
-            pop.FirstClicked += Pop_FirstClicked;
+            if (!PlcServer.IsRunning)
+            {
+                PopupDB pop = new PopupDB(((DBControl)sender).DBNumber);
+                PopUpGrid.Children.Add(pop);
+                pop.FirstClicked += Pop_FirstClicked;
+            }
         }
 
         // Context menu first button event
@@ -162,6 +177,14 @@ namespace S7Lite
         #endregion
 
         #region Utils
+
+        private void CheckDBStart()
+        {
+            if (DBMemory.Count > 0)
+                lbl_start.IsEnabled = true;
+            else
+                lbl_start.IsEnabled = false;
+        }
 
         private void RemoveDB(int num)
         {
@@ -180,6 +203,7 @@ namespace S7Lite
             DB old = DBMemory.Find(o => o.number == num);
             DBMemory.Remove(old);
             old = null;
+            CheckDBStart();
         }
 
         private void GetIp()
