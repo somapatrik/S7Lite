@@ -10,12 +10,14 @@ namespace S7Lite.Class
     {
 
         public int number;
+        public string name;
         public byte[] array;
 
-        public DB(int number, byte[] array)
+        public DB(int number, byte[] array, string name = "")
         {
             this.number = number;
             this.array = array;
+            this.name = name;
         }
     }
 }

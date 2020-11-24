@@ -58,8 +58,6 @@ namespace S7Lite
             }
         }
 
-     
-
         private void SetGUI()
         {
             // Events
@@ -87,16 +85,45 @@ namespace S7Lite
             if (!PlcServer.IsRunning)
             {
                 PlcServer.StartPLCServer();
-                lbl_start.Content = "STOP";
-                foreach(DBControl db in DBStack.Children)
+                if (PlcServer.IsRunning)
                 {
-                    db.Activate();
+                    LogGUI("PLC server started");
+
+                    lbl_start.Content = "STOP";
+                    lblAddDB.IsEnabled = false;
+                    foreach (DBControl db in DBStack.Children)
+                    {
+                        db.Activate();
+                    }
+                }
+                else
+                {
+                    string msg = "Server did not start";
+                    Logger.Log(msg, Logger.LogState.Error);
+                    LogGUI(msg);
                 }
             }
             else
             {
                 PlcServer.StopPLCServer();
-                lbl_start.Content = "START";
+                if (!PlcServer.IsRunning)
+                {
+                    LogGUI("PLC server stopped");
+
+                    lblAddDB.IsEnabled = true;
+                    lbl_start.Content = "START";
+
+                    foreach (DBControl db in DBStack.Children)
+                    {
+                        db.Deactivate();
+                    }
+
+                } else
+                {
+                    string msg = "Server did not stop";
+                    Logger.Log(msg, Logger.LogState.Error);
+                    LogGUI(msg);
+                }
             }
         }
 
