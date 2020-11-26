@@ -42,7 +42,7 @@ namespace S7Lite
 
             SetGUI();
 
-            Twatch = new Timer(new TimerCallback(Watch), null,0,1000);
+            Twatch = new System.Threading.Timer(new TimerCallback(Watch), null,0,1000);
         }
 
         private async void Watch(Object state)
@@ -56,9 +56,9 @@ namespace S7Lite
                 lbl_Online.Dispatcher.Invoke(() => {
                     lbl_Online.Style = PlcServer.CPUStatus == 8 ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
                     if (PlcServer.CPUStatus == 8)
-                        lbl_Online.Content = "Run";
+                        lbl_Online.Content = "CPU in RUN";
                     else if (PlcServer.CPUStatus == 4)
-                        lbl_Online.Content = "Stop";
+                        lbl_Online.Content = "CPU in STOP";
                     else
                         lbl_Online.Content = "Unknow CPU status";
                 });
@@ -117,6 +117,8 @@ namespace S7Lite
 
                     lbl_start.Content = "STOP";
                     lblAddDB.IsEnabled = false;
+                    cmb_ip.IsEnabled = false;
+
                     foreach (DBControl db in DBStack.Children)
                     {
                         db.Activate();
@@ -137,6 +139,7 @@ namespace S7Lite
                     LogGUI("PLC server stopped");
 
                     lblAddDB.IsEnabled = true;
+                    cmb_ip.IsEnabled = true;
                     lbl_start.Content = "START";
 
                     foreach (DBControl db in DBStack.Children)

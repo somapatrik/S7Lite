@@ -12,7 +12,7 @@ namespace S7Lite
     {
         public static S7Server PLC = new S7Server();
         public static List<DB> PLC_Memory = new List<DB>();
-        public static bool IsRunning;
+        //public static bool IsRunning;
         public static string PLC_IP;
 
         public static int MaxDBCount = 1024;
@@ -22,6 +22,8 @@ namespace S7Lite
         public static event EventHandler UpdatedDB;
 
         public static int CPUStatus { get { return PLC.CpuStatus; }  }
+        public static int ServerStatus { get { return PLC.ServerStatus; } }
+        public static bool IsRunning { get { return PLC.ServerStatus == 1 ? true : false; }   }
 
         static void PlcEventCallBack(IntPtr usrPtr, ref S7Server.USrvEvent Event, int Size)
         {
@@ -49,8 +51,6 @@ namespace S7Lite
         {
             bool error = PLC.StartTo(PLC_IP) == 0 ? false : true;
 
-            IsRunning = error ? false : true;
-
             if (IsRunning)
                 PLC.CpuStatus = 8;
 
@@ -61,7 +61,7 @@ namespace S7Lite
         {
             PLC.Stop();
             PLC.CpuStatus = 4;
-            IsRunning = false;
+            //IsRunning = false;
         }
 
         #region DB add/remove
