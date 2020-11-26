@@ -16,10 +16,12 @@ namespace S7Lite
         public static string PLC_IP;
 
         public static int MaxDBCount = 1024;
-        
+
         public static S7Server.TSrvCallback PlcCallBack = new S7Server.TSrvCallback(PlcEventCallBack);
 
         public static event EventHandler UpdatedDB;
+
+        public static int CPUStatus { get { return PLC.CpuStatus; }  }
 
         static void PlcEventCallBack(IntPtr usrPtr, ref S7Server.USrvEvent Event, int Size)
         {
@@ -40,6 +42,7 @@ namespace S7Lite
         {
             //PlcCallBack = new S7Server.TSrvCallback(PlcEventCallBack);
             PLC.SetEventsCallBack(PlcCallBack, IntPtr.Zero);
+            PLC.CpuStatus = 4;
         }
 
         public static bool StartPLCServer()

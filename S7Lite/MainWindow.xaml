@@ -38,13 +38,13 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <!--<ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>-->
                 </Grid.ColumnDefinitions>
                 <Label Grid.Column="0" x:Name="lbl_Server" Content="PLC Server" Style="{StaticResource TopButton}"/>
                 <Label Grid.Column="1" x:Name="lbl_Online" Content="CPU Status" Style="{StaticResource TopButton}"/>
-                <Label Grid.Column="2" x:Name="lbl_Write" Content="Read" Style="{StaticResource TopButton}"/>
-                <Label Grid.Column="3" x:Name="lbl_Read" Content="Write" Style="{StaticResource TopButton}"/>
+                <!--<Label Grid.Column="2" x:Name="lbl_Write" Content="Read" Style="{StaticResource TopButton}"/>
+                <Label Grid.Column="3" x:Name="lbl_Read" Content="Write" Style="{StaticResource TopButton}"/>-->
             </Grid>
         </StackPanel>
 

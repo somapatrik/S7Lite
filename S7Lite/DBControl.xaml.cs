@@ -31,6 +31,9 @@ namespace S7Lite
         // DB #
         public int DBNumber;
 
+        //DB obj
+        DB DBobject;
+
         // DB memory
         byte[] datablock;
 
@@ -42,16 +45,16 @@ namespace S7Lite
         public DBControl(ref DB db)
         {
             InitializeComponent();
-
+            DBobject = db;
             DBNumber = db.number;
             datablock = db.array;
+            lblDBName.Content = db.name;
 
             SetGui();
         }
 
         public void Activate()
         {
-            // Disable GUI
             DisableAddresses();
             DisableCombos();
             DisableActValues();
@@ -154,7 +157,6 @@ namespace S7Lite
             }
         }
 
-
         #region Utils
 
         private void SetGui()
@@ -224,7 +226,7 @@ namespace S7Lite
         // DB show/hide
         private void DbBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            GridData.Visibility = GridData.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                GridData.Visibility = GridData.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;     
         }
 
         // DB context event

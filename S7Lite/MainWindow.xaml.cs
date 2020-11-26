@@ -23,6 +23,9 @@ namespace S7Lite
 {
     public partial class MainWindow : Window
     {
+        //Watch
+        Timer Twatch;
+
         // Max DBSize
         int DBMaxSize = 1024;
 
@@ -38,6 +41,29 @@ namespace S7Lite
             PlcServer.UpdatedDB += PlcServer_UpdatedDB;
 
             SetGUI();
+
+            Twatch = new Timer(new TimerCallback(Watch), null,0,1000);
+        }
+
+        private async void Watch(Object state)
+        {
+            await Task.Run(() => {
+
+                lbl_Server.Dispatcher.Invoke(()=> {
+                    lbl_Server.Style = PlcServer.IsRunning ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
+                });
+
+                lbl_Online.Dispatcher.Invoke(() => {
+                    lbl_Online.Style = PlcServer.CPUStatus == 8 ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
+                    if (PlcServer.CPUStatus == 8)
+                        lbl_Online.Content = "Run";
+                    else if (PlcServer.CPUStatus == 4)
+                        lbl_Online.Content = "Stop";
+                    else
+                        lbl_Online.Content = "Unknow CPU status";
+                });
+
+            });
         }
 
         private void PlcServer_UpdatedDB(object sender, EventArgs e)
@@ -146,7 +172,7 @@ namespace S7Lite
                 if (PlcServer.IsDbAvailable(Int32.Parse(txtDBNumber.Text)))
                 {
                     // Original object
-                    DB newdb = new DB(Int32.Parse(txtDBNumber.Text), new byte[DBMaxSize]);
+                    DB newdb = new DB(Int32.Parse(txtDBNumber.Text), new byte[DBMaxSize], txtDBName.Text);
                     DBMemory.Add(newdb);
 
                     // PLC Server reference
@@ -159,6 +185,7 @@ namespace S7Lite
 
                     CheckDBStart();
 
+                    txtDBName.Text = "";
                     txtDBNumber.Text = PlcServer.GetAvailableDB().ToString();
                 }
                 else
