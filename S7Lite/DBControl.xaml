@@ -18,18 +18,29 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" x:Name="DbBar" 
-              MouseLeftButtonUp="DbBar_MouseLeftButtonUp"
               MouseRightButtonUp="DbBar_MouseRightButtonUp"
               Style="{StaticResource DbNameGrid}" >
-            
+
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" x:Name="lblDBNumber" Foreground="WhiteSmoke" Content="DB control"  Style="{StaticResource DbBar_Name}"/>
-            <Label Grid.Column="1" x:Name="lblDBName"  Foreground="WhiteSmoke" Style="{StaticResource DbBar_Name}"/>
-            <Label Grid.Column="2" x:Name="lblUsedBytes" Foreground="WhiteSmoke" Content="Used bytes" Style="{StaticResource DbBar_Name}"/>
+
+            <Label Grid.Column="0" x:Name="lblCollapse" MouseLeftButtonUp="DbBar_MouseLeftButtonUp"
+                   Foreground="WhiteSmoke" FontFamily="Marlett" Content="4"  VerticalAlignment="Center" Style="{StaticResource DbBar_Name}"/>
+            
+            <Label Grid.Column="1" x:Name="lblDBNumber" Foreground="WhiteSmoke" Content="DB control"  Style="{StaticResource DbBar_Name}"/>
+            <Label Grid.Column="2" x:Name="lblDBName"  Foreground="WhiteSmoke" Style="{StaticResource DbBar_Name}"/>
+            <Label Grid.Column="3" x:Name="lblUsedBytes" Foreground="WhiteSmoke" Content="Used bytes" Style="{StaticResource DbBar_Name}"/>
+            
+            <StackPanel Orientation="Horizontal" Grid.Column="4">
+                <Label x:Name="lbl_ReadAll" Foreground="WhiteSmoke" Content="R" MouseLeftButtonUp="lbl_ReadAll_MouseLeftButtonUp" Visibility="Hidden" IsEnabled="False" Style="{StaticResource DbBar_Name}"/>
+                <Label x:Name="lbl_WriteAll" Foreground="WhiteSmoke" Content="W" MouseLeftButtonUp="lbl_WriteAll_MouseLeftButtonUp" Visibility="Hidden" IsEnabled="False" Style="{StaticResource DbBar_Name}"/>
+            </StackPanel>
+
         </Grid>
 
         <Grid Grid.Row="1" Height="auto" x:Name="GridData" VerticalAlignment="Top" Visibility="Collapsed">

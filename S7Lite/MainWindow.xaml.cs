@@ -70,7 +70,9 @@ namespace S7Lite
         {
             try
             {
-                Logger.Log("Client updated DB " + sender.ToString());
+                string msg = "Client updated DB " + sender.ToString();
+                Logger.Log(msg);
+                LogGUI(msg);
 
                 foreach (DBControl db in DBStack.Children)
                 {

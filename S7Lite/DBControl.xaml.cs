@@ -82,6 +82,20 @@ namespace S7Lite
             });
         }
 
+        public async void WriteAll()
+        {
+            await Task.Run(() =>
+            {
+                GridData.Dispatcher.Invoke(() =>
+                {
+                    foreach (int i in UsedIndexes)
+                    {
+                        WriteValue(i);
+                    }
+                });
+            });
+        }
+
         public void WriteValue(int index)
         {
             // Get address
@@ -226,7 +240,14 @@ namespace S7Lite
         // DB show/hide
         private void DbBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-                GridData.Visibility = GridData.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;     
+            GridData.Visibility = GridData.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            lblCollapse.Content = GridData.Visibility == Visibility.Collapsed ? "4" : "6";
+
+            lbl_ReadAll.Visibility = GridData.Visibility == Visibility.Collapsed ? Visibility.Hidden : Visibility.Visible;
+            lbl_WriteAll.Visibility = GridData.Visibility == Visibility.Collapsed ? Visibility.Hidden : Visibility.Visible;
+
+            lbl_ReadAll.IsEnabled = GridData.Visibility == Visibility.Collapsed ? false : true;
+            lbl_WriteAll.IsEnabled = GridData.Visibility == Visibility.Collapsed ? false : true;
         }
 
         // DB context event
@@ -546,7 +567,7 @@ namespace S7Lite
             int z = lastdatarow * (-1);
             Grid.SetZIndex(combo, z);
 
-            UsedIndexes.Add(lastdatarow);
+            
 
             //ScrollData.ScrollToBottom();
 
@@ -594,6 +615,7 @@ namespace S7Lite
             if (actcombo.Tag is null)
             {
                 start = GetLastFreeByte(needspace);
+                UsedIndexes.Add(selectedrow);
                 log += "Action: new line";
             }
             else
@@ -777,8 +799,17 @@ namespace S7Lite
             valuebox.Text = type != "CHAR" ? "0" : "";
         }
 
+
         #endregion
 
+        private void lbl_ReadAll_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
 
+        }
+
+        private void lbl_WriteAll_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            WriteAll();
+        }
     }
 }
