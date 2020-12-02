@@ -241,6 +241,7 @@ namespace S7Lite
         private void DbBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             GridData.Visibility = GridData.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            DbBar.Style = GridData.Visibility == Visibility.Visible ? (Style) Resources["DbNameGridSelected"] : (Style)Resources["DbNameGrid"];
             lblCollapse.Content = GridData.Visibility == Visibility.Collapsed ? "4" : "6";
 
             lbl_ReadAll.Visibility = GridData.Visibility == Visibility.Collapsed ? Visibility.Hidden : Visibility.Visible;
@@ -804,7 +805,7 @@ namespace S7Lite
 
         private void lbl_ReadAll_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-
+            UpdateDB();
         }
 
         private void lbl_WriteAll_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
