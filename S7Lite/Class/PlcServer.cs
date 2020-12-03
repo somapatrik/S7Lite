@@ -43,12 +43,15 @@ namespace S7Lite
         public static void IniServer()
         {
             //PlcCallBack = new S7Server.TSrvCallback(PlcEventCallBack);
+            //byte[] field = new byte[256];
+            //PLC.RegisterArea(S7Server.S7AreaDB, 1, ref field, field.Length);
             PLC.SetEventsCallBack(PlcCallBack, IntPtr.Zero);
             PLC.CpuStatus = 4;
         }
 
         public static bool StartPLCServer()
         {
+           RegisterDB();
             bool error = PLC.StartTo(PLC_IP) == 0 ? false : true;
 
             if (IsRunning)
@@ -75,7 +78,7 @@ namespace S7Lite
         {
             foreach(DB datablock in PLC_Memory)
             {
-                PLC.RegisterArea(S7Server.S7AreaDB, datablock.number, ref datablock.array, datablock.array.Length);
+                PLC.RegisterArea(S7Server.srvAreaDB, datablock.number, ref datablock.array, datablock.array.Length);
             }
         }
 

@@ -176,8 +176,9 @@ namespace S7Lite
             {
                 if (PlcServer.IsDbAvailable(Int32.Parse(txtDBNumber.Text)))
                 {
+                    byte[] field = new byte[DBMaxSize];
                     // Original object
-                    DB newdb = new DB(Int32.Parse(txtDBNumber.Text), new byte[DBMaxSize], txtDBName.Text);
+                    DB newdb = new DB(Int32.Parse(txtDBNumber.Text), field, txtDBName.Text);
                     DBMemory.Add(newdb);
 
                     // PLC Server reference

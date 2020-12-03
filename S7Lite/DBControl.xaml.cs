@@ -26,7 +26,7 @@ namespace S7Lite
         List<int> DBUsedBytes = new List<int>();
 
         // Max DBSize
-        int DBSize = 1024;
+        int DBSize = 256;
 
         // DB #
         public int DBNumber;
