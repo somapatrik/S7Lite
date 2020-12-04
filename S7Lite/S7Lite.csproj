@@ -171,10 +171,10 @@
   <PropertyGroup>
     <PreBuildEvent>if $(PlatformName)  == x86 (
 echo "Copy dll for x86"
-xcopy "$(ProjectDir)DLL\x86\snap7.dll" /Y
+xcopy "$(ProjectDir)DLL\Snap7X86\snap7.dll" /Y
 ) else (
 echo "Copy dll for x64"
-xcopy "$(ProjectDir)DLL\x64\snap7.dll" /Y
+xcopy "$(ProjectDir)DLL\Snap7X64\snap7.dll" /Y
 )
 </PreBuildEvent>
   </PropertyGroup>
