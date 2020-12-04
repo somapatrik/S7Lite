@@ -164,6 +164,9 @@
     <Content Include="DLL\x64\snap7.dll" />
     <Content Include="DLL\x86\snap7.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="libraries\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>if $(PlatformName)  == x86 (
