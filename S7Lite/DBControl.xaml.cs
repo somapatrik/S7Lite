@@ -679,7 +679,7 @@ namespace S7Lite
 
             // Check if grid with bit values exists
             Grid bitbox = GetGrid("bitgrid_" + selectedrow.ToString());
-            Grid bitbox2 = GetGrid("bitgrid_input_" + selectedrow.ToString());
+            Grid bitbox2 = GetGrid("bitgridinput_" + selectedrow.ToString());
 
             bool IsBitValue = bitbox != null ? true : false;
 
@@ -696,8 +696,8 @@ namespace S7Lite
                     }
 
                     // Add bits
-                    Grid GridBit = new Grid();      // 0 1 2 3 
-                    Grid GridBit2 = new Grid();     // 4 5 6 7 
+                    Grid GridBit = new Grid();      // Actual values
+                    Grid GridBit2 = new Grid();     // Input values
 
                     for (int b = 0; b < 8; b++)
                     {
@@ -716,19 +716,20 @@ namespace S7Lite
 
                         // Actual bits
                         Label bit = new Label();
-                        bit.Content = b.ToString();
+                        bit.Content = "." + b.ToString();
                         bit.Style = Resources["bitlabel"] as Style;
                         bit.Name = "bitvalue_" + selectedrow + "_" + b.ToString();
-                        bit.Tag = b.ToString();                                         // Every label contains bit in TAG
+                        bit.Tag = 0;                                         // Every label contains bit in TAG
                         bit.ToolTip = bit.Tag.ToString();
 
                         // Input bits
                         Label bit2 = new Label();
-                        bit2.Content = b.ToString();
-                        bit2.Style = Resources["bitlabel"] as Style;
-                        bit2.Name = "bitvalue_input_" + selectedrow + "_" + b.ToString();
-                        bit2.Tag = b.ToString();                                         // Every label contains bit in TAG
+                        bit2.Content = "." + b.ToString();
+                        bit2.Style = Resources["bitinput_neg"] as Style;
+                        bit2.Name = "bitvalueinput_" + selectedrow + "_" + b.ToString();
+                        bit2.Tag = 0;                                         // Every label contains bit in TAG
                         bit2.ToolTip = bit.Tag.ToString();
+                        bit2.MouseLeftButtonUp += Bit2_MouseLeftButtonUp;
 
                         GridBit.Children.Add(bit);
                         Grid.SetRow(bit, b);
@@ -780,8 +781,6 @@ namespace S7Lite
                     Grid.SetRow(newinput, selectedrow);
                     Grid.SetColumn(newinput, 3);
 
-                   // GridData.RowDefinitions[selectedrow].Height = new GridLength(1, GridUnitType.Auto);
-
                 }
                 else if (IsTextBox)
                 {
@@ -790,6 +789,13 @@ namespace S7Lite
                 }
             }
 
+        }
+
+        private void Bit2_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Label bit = (Label)sender;
+            bit.Tag = bit.Tag.Equals(0) ? 1 : 0;
+            bit.Style = bit.Tag.Equals(0) ? (Style)Resources["bitinput_neg"] : (Style)Resources["bitinput_pos"];
         }
 
         private void SetDefaultValue(TextBox valuebox, string type)
