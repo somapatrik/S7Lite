@@ -20,7 +20,6 @@
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
 
-
     <Style x:Key="AddressEdit" TargetType="TextBox">
         <Setter Property="Background" Value="White"/>
         <Setter Property="Foreground" Value="Black"/>
@@ -30,30 +29,29 @@
     </Style>
 
     <Style x:Key="bitlabel" TargetType="Label">
+        <Setter Property="Background" Value="#FF33291A"/>
         <Setter Property="Foreground" Value="#FFAAAAAA"/>
-        <Setter Property="BorderThickness" Value=".5"/>
         <Setter Property="BorderBrush" Value="#FFAAAAAA"/>
-        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value=".3 .3 0 0"/>
+        <Setter Property="Padding" Value="3"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="Background" Value="#404859"/>
-            </Trigger>
-        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="bitinput" TargetType="Label" BasedOn="{StaticResource bitlabel}">
+        <Setter Property="Cursor" Value="Hand"/>
     </Style>
 
     <Style x:Key="bitlabel_active" TargetType="Label" BasedOn="{StaticResource bitlabel}">
         <Setter Property="Background" Value="Green"/>
     </Style>
 
-    <Style x:Key="bitgrid" TargetType="Grid">
-        <Setter Property="Background" Value="#FF353028"/>
-    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    <Style x:Key="DataType" TargetType="ComboBox">
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
     </Style>
-
+    
     <Style x:Key="ValueBox" TargetType="TextBox">
-        <Setter Property="Background" Value="#FF353028"/>  <!--="#FF274968"/>-->
+        <Setter Property="Background" Value="#FF353028"/>
         <Setter Property="Foreground" Value="#FFAAAAAA"/>
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="Padding" Value="3"/>
@@ -67,7 +65,6 @@
         <Setter Property="Padding" Value="3"/>
         <Setter Property="BorderThickness" Value=".3"/>
     </Style>
-
 
     <Style x:Key="TopButton" TargetType="Label">
         <Setter Property="HorizontalContentAlignment" Value="Center"/>

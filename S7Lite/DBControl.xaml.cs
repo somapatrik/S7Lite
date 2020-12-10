@@ -467,7 +467,6 @@ namespace S7Lite
             }
             else
             {
-
                 // Start byte
                 int Start = 0;
 
@@ -512,7 +511,9 @@ namespace S7Lite
 
         private void AddRow()
         {
-            GridData.RowDefinitions.Add(new RowDefinition());
+            RowDefinition newrow = new RowDefinition();
+            newrow.Style = Resources["DataRow"] as Style;
+            GridData.RowDefinitions.Add(newrow);
             int lastdatarow = GridData.RowDefinitions.Count - 1;
 
             TextBox address = new TextBox();
@@ -567,8 +568,6 @@ namespace S7Lite
 
             int z = lastdatarow * (-1);
             Grid.SetZIndex(combo, z);
-
-            
 
             //ScrollData.ScrollToBottom();
 
@@ -650,7 +649,7 @@ namespace S7Lite
 
             AddUsedByte(start, needspace);          // Add newly used bytes
 
-            // Set adrres box
+            // Set address box
             ActAddresBox.Text = start.ToString();
             ActAddresBox.Tag = ActAddresBox.Text;
             ActAddresBox.ToolTip = ActAddresBox.Tag.ToString();
@@ -680,7 +679,7 @@ namespace S7Lite
 
             // Check if grid with bit values exists
             Grid bitbox = GetGrid("bitgrid_" + selectedrow.ToString());
-            Grid bitbox2 = GetGrid("bitgrid2_" + selectedrow.ToString());
+            Grid bitbox2 = GetGrid("bitgrid_input_" + selectedrow.ToString());
 
             bool IsBitValue = bitbox != null ? true : false;
 
@@ -699,31 +698,23 @@ namespace S7Lite
                     // Add bits
                     Grid GridBit = new Grid();      // 0 1 2 3 
                     Grid GridBit2 = new Grid();     // 4 5 6 7 
-                    GridBit.RowDefinitions.Add(new RowDefinition());
-                    GridBit2.RowDefinitions.Add(new RowDefinition());
 
                     for (int b = 0; b < 8; b++)
                     {
-                        if (b < 4)
-                        {
-                            GridBit.ColumnDefinitions.Add(new ColumnDefinition());
-                        }
-                        else
-                        {
-                            GridBit2.ColumnDefinitions.Add(new ColumnDefinition());
-                        }
-
+                        GridBit.RowDefinitions.Add(new RowDefinition());
+                        GridBit2.RowDefinitions.Add(new RowDefinition());
                     }
 
                     GridBit.Name = "bitgrid_" + selectedrow;
                     GridBit.Style = Resources["bitgrid"] as Style;
 
-                    GridBit2.Name = "bitgrid2_" + selectedrow;
+                    GridBit2.Name = "bitgrid_input_" + selectedrow;
                     GridBit2.Style = Resources["bitgrid"] as Style;
 
                     for (int b = 0; b < 8; b++)
                     {
 
+                        // Actual bits
                         Label bit = new Label();
                         bit.Content = b.ToString();
                         bit.Style = Resources["bitlabel"] as Style;
@@ -731,18 +722,21 @@ namespace S7Lite
                         bit.Tag = b.ToString();                                         // Every label contains bit in TAG
                         bit.ToolTip = bit.Tag.ToString();
 
-                        if (b < 4)
-                        {
-                            GridBit.Children.Add(bit);
-                            Grid.SetRow(bit, 0);
-                            Grid.SetColumn(bit, b);
-                        }
-                        else
-                        {
-                            GridBit2.Children.Add(bit);
-                            Grid.SetRow(bit, 0);
-                            Grid.SetColumn(bit, b - 4);
-                        }
+                        // Input bits
+                        Label bit2 = new Label();
+                        bit2.Content = b.ToString();
+                        bit2.Style = Resources["bitlabel"] as Style;
+                        bit2.Name = "bitvalue_input_" + selectedrow + "_" + b.ToString();
+                        bit2.Tag = b.ToString();                                         // Every label contains bit in TAG
+                        bit2.ToolTip = bit.Tag.ToString();
+
+                        GridBit.Children.Add(bit);
+                        Grid.SetRow(bit, b);
+                        Grid.SetColumn(bit, 0);
+
+                        GridBit2.Children.Add(bit2);
+                        Grid.SetRow(bit2, b);
+                        Grid.SetColumn(bit2, 0);
 
                     }
 
@@ -785,6 +779,9 @@ namespace S7Lite
                     GridData.Children.Add(newinput);
                     Grid.SetRow(newinput, selectedrow);
                     Grid.SetColumn(newinput, 3);
+
+                   // GridData.RowDefinitions[selectedrow].Height = new GridLength(1, GridUnitType.Auto);
+
                 }
                 else if (IsTextBox)
                 {
