@@ -70,15 +70,21 @@ namespace S7Lite
         {
             try
             {
+                string dbnumberS = sender.ToString();
+                int dbnumber = Int32.Parse(dbnumberS);
+
                 string msg = "Client updated DB " + sender.ToString();
                 Logger.Log(msg);
                 LogGUI(msg);
 
-                foreach (DBControl db in DBStack.Children)
-                {
-                    if (db.DBNumber == (int)sender)
-                        db.UpdateDB();
-                }
+                // TODO Invoke needed
+                DBStack.Dispatcher.Invoke(() => {
+                    foreach (DBControl db in DBStack.Children)
+                    {
+                        if (db.DBNumber == dbnumber)
+                            db.UpdateDB();
+                    }
+                });
 
             } catch (Exception ex)
             {
@@ -96,6 +102,10 @@ namespace S7Lite
 
             // Disable start
             lbl_start.IsEnabled = false;
+
+            // Version
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            lbl_Version.Content = string.Format("v{0}.{1} (Beta)",version.Major, version.Minor);
 
         }
 
@@ -120,6 +130,8 @@ namespace S7Lite
                     lbl_start.Content = "STOP";
                     lblAddDB.IsEnabled = false;
                     cmb_ip.IsEnabled = false;
+
+                    
 
                     foreach (DBControl db in DBStack.Children)
                     {

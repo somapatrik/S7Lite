@@ -64,7 +64,7 @@ namespace S7Lite
         {
             PLC.Stop();
             PLC.CpuStatus = 4;
-            //IsRunning = false;
+            UnregisterAllDB();
         }
 
         #region DB add/remove
@@ -86,6 +86,14 @@ namespace S7Lite
         {
             if (PLC!=null)
                 PLC.UnregisterArea(S7Server.S7AreaDB, num);
+        }
+
+        public static void UnregisterAllDB()
+        {
+            foreach (DB datablock in PLC_Memory)
+            {
+                PLC.UnregisterArea(S7Server.srvAreaDB, datablock.number);
+            }
         }
 
         public static void DBRemove(int DBNumber)
