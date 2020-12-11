@@ -22,8 +22,12 @@ namespace S7Lite
 {
     public partial class DBControl : UserControl
     {
+        // Used rows
         List<int> UsedIndexes = new List<int>();
+        // Used bytes
         List<int> DBUsedBytes = new List<int>();
+        // Dictionary index = byte
+        List<ByteIndex> IndexBytes = new List<ByteIndex>();
 
         // Max DBSize
         int DBSize = 256;
@@ -53,20 +57,7 @@ namespace S7Lite
             SetGui();
         }
 
-        public void Activate()
-        {
-            DisableAddresses();
-            DisableCombos();
-            DisableActValues();
-        }
-
-        public void Deactivate()
-        {
-            EnableAddresses();
-            EnableCombos();
-            EnableActValues();
-        }
-
+        #region Read/write
 
         public async void UpdateDB()
         {
@@ -99,15 +90,26 @@ namespace S7Lite
         public void WriteValue(int index)
         {
             // Get address
-            int address = Int32.Parse(GetTextBox("blcaddress_" + index).Text);
-            // Get value to write
-            string input = GetTextBox("inputvalue_" + index).Text;
+            //int address = Int32.Parse(GetTextBox("blcaddress_" + index).Text);
+
+            // Get byte from global array not from GUI
+            int address = GetByteFromIndex(index);
+
             // Type
             string type = GetComboBox("cmbtype_" + index).SelectedValue.ToString();
+
+            string input = "";
+
+            if (type != "BIT")
+            {
+                // Get value to write
+                 input = GetTextBox("inputvalue_" + index).Text;
+            }
 
             switch (type)
             {
                 case "BIT":
+                    SetBits(index);
                     break;
                 case "BYTE":
                     S7.SetByteAt(datablock, address, byte.Parse(input));
@@ -137,7 +139,11 @@ namespace S7Lite
         private void ReadValue(int index)
         {
             // Get address
-            int address = Int32.Parse(GetTextBox("blcaddress_" + index).Text);
+            //int address = Int32.Parse(GetTextBox("blcaddress_" + index).Text);
+
+            // Read from global array, not from GUI
+            int address = GetByteFromIndex(index);
+
             // Get output box
             TextBox output = GetTextBox("txtvalue_" + index);
             // Type
@@ -146,6 +152,7 @@ namespace S7Lite
             switch (type)
             {
                 case "BIT":
+                    GetBits(index);
                     break;
                 case "BYTE":
                     output.Text = S7.GetByteAt(datablock, address).ToString();
@@ -171,6 +178,46 @@ namespace S7Lite
             }
         }
 
+        private void SetBits(int index)
+        {
+            int address = GetByteFromIndex(index);
+            Grid bitinputbox = GetGrid("bitgridinput_" + index);
+
+            if (bitinputbox == null)
+            {
+                return;
+            }
+
+            foreach (Label bitlabel in bitinputbox.Children.OfType<Label>())
+            {
+                int bitoffset = Int32.Parse(bitlabel.Name.Split('_')[2]);
+                bool value = bitlabel.Tag.Equals(0) ? false : true;
+                S7.SetBitAt(ref datablock, address, bitoffset, value);
+            }
+        }
+
+        private void GetBits(int index)
+        {
+            int address = GetByteFromIndex(index);
+            Grid bitactbox = GetGrid("bitgrid_" + index);
+
+            if (bitactbox == null)
+            {
+                return;
+            }
+
+
+            foreach (Label bitlabel in bitactbox.Children.OfType<Label>())
+            {
+                int bitoffset = Int32.Parse(bitlabel.Name.Split('_')[2]);
+                bool value = S7.GetBitAt(datablock, address, bitoffset);
+                bitlabel.Tag = value ? true : false;
+                bitlabel.Style = value ? (Style)Resources["bitlabel_pos"] : (Style)Resources["bitlabel"];
+            }
+        }
+
+        #endregion
+
         #region Utils
 
         private void SetGui()
@@ -183,6 +230,11 @@ namespace S7Lite
         private void SetUsedBytes()
         {
             lblUsedBytes.Content = DBUsedBytes.Count.ToString() + "/" + DBSize;
+        }
+        
+        private void SetDefaultValue(TextBox valuebox, string type)
+        {
+            valuebox.Text = type != "CHAR" ? "0" : "";
         }
 
         #endregion
@@ -313,9 +365,33 @@ namespace S7Lite
             }
         }
 
+        private void lbl_ReadAll_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            UpdateDB();
+        }
+
+        private void lbl_WriteAll_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            WriteAll();
+        }
+
         #endregion
 
         #region Enable/Disable
+
+        public void Activate()
+        {
+            DisableAddresses();
+            DisableCombos();
+            DisableActValues();
+        }
+
+        public void Deactivate()
+        {
+            EnableAddresses();
+            EnableCombos();
+            EnableActValues();
+        }
 
         private void DisableCombos()
         {
@@ -574,7 +650,7 @@ namespace S7Lite
             Logger.Log("Add new line #" + lastdatarow);
         }
 
-        // Data type changes
+        // COMBOBOX changed
         private void cmbtype_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox actcombo = (ComboBox)sender;
@@ -654,6 +730,9 @@ namespace S7Lite
             ActAddresBox.Tag = ActAddresBox.Text;
             ActAddresBox.ToolTip = ActAddresBox.Tag.ToString();
 
+            // Set global index array
+            UpdateIndexByte(selectedrow, Int32.Parse(ActAddresBox.Text));
+
             // Set data type combo
             actcombo.Tag = needspace;
             actcombo.ToolTip = actcombo.Tag.ToString();
@@ -665,6 +744,31 @@ namespace S7Lite
             {
                 AddRow();
             }
+        }
+
+        private void UpdateIndexByte(int index, int address)
+        {
+            ByteIndex obj = IndexBytes.Find(o => o.Index == index);
+
+            if (obj != null)
+            {
+                IndexBytes.Remove(obj);
+            }
+
+            IndexBytes.Add(new ByteIndex(index, address));
+
+        }
+
+        private int GetByteFromIndex(int index)
+        {
+            ByteIndex obj = IndexBytes.Find(o => o.Index == index);
+            return obj == null ? -1 : obj.Byte;
+        }
+
+        private int GetIndexFromByte(int ByteAddress)
+        {
+            ByteIndex obj = IndexBytes.Find(o => o.Byte == ByteAddress);
+            return obj == null ? -1 : obj.Index;
         }
 
         // Set valuebox BIT/Text
@@ -708,7 +812,7 @@ namespace S7Lite
                     GridBit.Name = "bitgrid_" + selectedrow;
                     GridBit.Style = Resources["bitgrid"] as Style;
 
-                    GridBit2.Name = "bitgrid_input_" + selectedrow;
+                    GridBit2.Name = "bitgridinput_" + selectedrow;
                     GridBit2.Style = Resources["bitgrid"] as Style;
 
                     for (int b = 0; b < 8; b++)
@@ -790,7 +894,8 @@ namespace S7Lite
             }
 
         }
-
+        
+        // Bit clicked
         private void Bit2_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Label bit = (Label)sender;
@@ -798,22 +903,8 @@ namespace S7Lite
             bit.Style = bit.Tag.Equals(0) ? (Style)Resources["bitinput_neg"] : (Style)Resources["bitinput_pos"];
         }
 
-        private void SetDefaultValue(TextBox valuebox, string type)
-        {
-            valuebox.Text = type != "CHAR" ? "0" : "";
-        }
-
-
         #endregion
 
-        private void lbl_ReadAll_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            UpdateDB();
-        }
 
-        private void lbl_WriteAll_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            WriteAll();
-        }
     }
 }

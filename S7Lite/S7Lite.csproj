@@ -99,6 +99,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Class\ByteIndex.cs" />
     <Compile Include="Class\DB.cs" />
     <Compile Include="Class\snap7.net.cs" />
     <Compile Include="Class\PlcServer.cs" />
