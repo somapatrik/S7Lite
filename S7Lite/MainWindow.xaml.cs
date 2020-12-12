@@ -92,23 +92,6 @@ namespace S7Lite
             }
         }
 
-        private void SetGUI()
-        {
-            // Events
-            txtDBNumber.TextChanged += TxtDBNumber_TextChanged;
-
-            // Load possible server IP
-            GetIp();
-
-            // Disable start
-            lbl_start.IsEnabled = false;
-
-            // Version
-            Version version = Assembly.GetExecutingAssembly().GetName().Version;
-            lbl_Version.Content = string.Format("v{0}.{1} (Beta)",version.Major, version.Minor);
-
-        }
-
         #region GUI events
 
         // IP address changed
@@ -220,7 +203,7 @@ namespace S7Lite
         // Log label
         private void Label_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            RowLog.Height = RowLog.Height.Value == 0 ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+            RowLog.Height = RowLog.Height.Value == 0 ? new GridLength(0.5, GridUnitType.Star) : new GridLength(0);
         }
 
         #endregion
@@ -249,6 +232,22 @@ namespace S7Lite
         #endregion
 
         #region Utils
+        private void SetGUI()
+        {
+            // Events
+            txtDBNumber.TextChanged += TxtDBNumber_TextChanged;
+
+            // Load possible server IP
+            GetIp();
+
+            // Disable start
+            lbl_start.IsEnabled = false;
+
+            // Version
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            lbl_Version.Content = string.Format("v{0}.{1} (Beta)", version.Major, version.Minor);
+
+        }
 
         private void CheckDBStart()
         {

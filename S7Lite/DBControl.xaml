@@ -32,13 +32,13 @@
             <Label Grid.Column="0" x:Name="lblCollapse" MouseLeftButtonUp="DbBar_MouseLeftButtonUp"
                    Foreground="WhiteSmoke" FontWeight="Bold" FontFamily="Marlett" Content="4"  VerticalAlignment="Center" Style="{StaticResource DbBar_Name}"/>
             
-            <Label Grid.Column="1" x:Name="lblDBNumber" Foreground="WhiteSmoke" Content="DB control"  Style="{StaticResource DbBar_Name}"/>
-            <Label Grid.Column="2" x:Name="lblDBName"  Foreground="WhiteSmoke" Style="{StaticResource DbBar_Name}"/>
-            <Label Grid.Column="3" x:Name="lblUsedBytes" Foreground="WhiteSmoke" Content="Used bytes" Style="{StaticResource DbBar_Name}"/>
+            <Label Grid.Column="1" x:Name="lblDBNumber" Content="DB control"  Style="{StaticResource DbBar_Name}"/>
+            <Label Grid.Column="2" x:Name="lblDBName"  Style="{StaticResource DbBar_Name}"/>
+            <Label Grid.Column="3" x:Name="lblUsedBytes" Content="Used bytes" Style="{StaticResource DbBar_Name}"/>
             
             <StackPanel Orientation="Horizontal" Grid.Column="4">
-                <Label x:Name="lbl_ReadAll" Foreground="WhiteSmoke" FontWeight="Bold" Content="R" MouseLeftButtonUp="lbl_ReadAll_MouseLeftButtonUp" Visibility="Hidden" IsEnabled="False" Style="{StaticResource DbBar_Name}"/>
-                <Label x:Name="lbl_WriteAll" Foreground="WhiteSmoke" FontWeight="Bold" Content="W" MouseLeftButtonUp="lbl_WriteAll_MouseLeftButtonUp" Visibility="Hidden" IsEnabled="False" Style="{StaticResource DbBar_Name}"/>
+                <Label x:Name="lbl_ReadAll" Content="Refresh" MouseLeftButtonUp="lbl_ReadAll_MouseLeftButtonUp" Visibility="Hidden" IsEnabled="False" Style="{StaticResource DbBar_ReadWrite}"/>
+                <Label x:Name="lbl_WriteAll" Content="Write all" MouseLeftButtonUp="lbl_WriteAll_MouseLeftButtonUp" Visibility="Hidden" IsEnabled="False" Style="{StaticResource DbBar_ReadWrite}"/>
             </StackPanel>
 
         </Grid>
