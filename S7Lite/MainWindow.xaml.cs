@@ -42,28 +42,26 @@ namespace S7Lite
 
             SetGUI();
 
-            Twatch = new System.Threading.Timer(new TimerCallback(Watch), null,0,1000);
+            Twatch = new System.Threading.Timer(Watch, null,0,1000);
         }
 
-        private async void Watch(Object state)
+        private void Watch(Object state)
         {
-            await Task.Run(() => {
-
-                lbl_Server.Dispatcher.Invoke(()=> {
-                    lbl_Server.Style = PlcServer.IsRunning ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
-                });
-
-                lbl_Online.Dispatcher.Invoke(() => {
-                    lbl_Online.Style = PlcServer.CPUStatus == 8 ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
-                    if (PlcServer.CPUStatus == 8)
-                        lbl_Online.Content = "CPU in RUN";
-                    else if (PlcServer.CPUStatus == 4)
-                        lbl_Online.Content = "CPU in STOP";
-                    else
-                        lbl_Online.Content = "Unknow CPU status";
-                });
-
+           
+            lbl_Server.Dispatcher.Invoke(()=> {
+                lbl_Server.Style = PlcServer.IsRunning ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
             });
+
+            lbl_Online.Dispatcher.Invoke(() => {
+                lbl_Online.Style = PlcServer.CPUStatus == 8 ? Resources["TopButtonOK"] as Style : Resources["TopButtonNOK"] as Style;
+                if (PlcServer.CPUStatus == 8)
+                    lbl_Online.Content = "CPU in RUN";
+                else if (PlcServer.CPUStatus == 4)
+                    lbl_Online.Content = "CPU in STOP";
+                else
+                    lbl_Online.Content = "Unknow CPU status";
+            });
+
         }
 
         private void PlcServer_UpdatedDB(object sender, EventArgs e)
@@ -94,6 +92,24 @@ namespace S7Lite
 
         #region GUI events
 
+        // Set PLC START status
+        private void lbl_PlcStatusStart_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            PlcServer.CPUStatus = 8; 
+        }
+
+        // Set PLC Unknown status
+        private void lbl_PlcStatusUnknown_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            PlcServer.CPUStatus = 0;
+        }
+
+        // Set PLC Stop staus
+        private void lbl_PlcStatusStop_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            PlcServer.CPUStatus = 4;
+        }
+
         // IP address changed
         private void cmb_ip_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -110,7 +126,7 @@ namespace S7Lite
                 {
                     LogGUI("PLC server started");
 
-                    lbl_start.Content = "STOP";
+                    lbl_start.Content = "STOP SERVER";
                     lblAddDB.IsEnabled = false;
                     cmb_ip.IsEnabled = false;
 
@@ -137,7 +153,7 @@ namespace S7Lite
 
                     lblAddDB.IsEnabled = true;
                     cmb_ip.IsEnabled = true;
-                    lbl_start.Content = "START";
+                    lbl_start.Content = "START SERVER";
 
                     foreach (DBControl db in DBStack.Children)
                     {
@@ -311,5 +327,7 @@ namespace S7Lite
         }
 
         #endregion
+
+        
     }
 }

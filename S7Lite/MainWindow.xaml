@@ -31,21 +31,32 @@
         </Grid.RowDefinitions>
 
         <!-- IP menu + start -->
-        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
-            <ComboBox x:Name="cmb_ip" HorizontalContentAlignment="Center" FontSize="14" Margin="0 5 0 5" Padding="5" SelectionChanged="cmb_ip_SelectionChanged"/>
-            <Label  x:Name="lbl_start" Content="START" Style="{StaticResource StartButton}" MouseLeftButtonUp="lbl_start_MouseLeftButtonUp"/>
+        <StackPanel Orientation="Vertical" Margin="10">
+            <ComboBox x:Name="cmb_ip" HorizontalContentAlignment="Center" FontSize="14" Margin="0 5 0 5" Padding="5" SelectionChanged="cmb_ip_SelectionChanged" Style="{StaticResource ComboBoxFlatStyle}"/>
+            <Label  x:Name="lbl_start" Content="START SERVER" Style="{StaticResource StartButton}" MouseLeftButtonUp="lbl_start_MouseLeftButtonUp"/>
+
+            <!--Show status-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label x:Name="lbl_Server" Content="PLC Server" Style="{StaticResource TopButton}"/>
+                <Label Grid.Row="1" x:Name="lbl_Online" Content="CPU Status" Style="{StaticResource TopButton}"/>
+            </Grid>
+
+            <!--Set CPU status-->
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <!--<ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>-->
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" x:Name="lbl_Server" Content="PLC Server" Style="{StaticResource TopButton}"/>
-                <Label Grid.Column="1" x:Name="lbl_Online" Content="CPU Status" Style="{StaticResource TopButton}"/>
-                <!--<Label Grid.Column="2" x:Name="lbl_Write" Content="Read" Style="{StaticResource TopButton}"/>
-                <Label Grid.Column="3" x:Name="lbl_Read" Content="Write" Style="{StaticResource TopButton}"/>-->
+                <Label Content="Start" x:Name="lbl_PlcStatusStart" MouseLeftButtonUp="lbl_PlcStatusStart_MouseLeftButtonUp" Style="{StaticResource StartButton}"/>
+                <Label Grid.Column="1" Content="Unknown" x:Name="lbl_PlcStatusUnknown" MouseLeftButtonUp="lbl_PlcStatusUnknown_MouseLeftButtonUp" Style="{StaticResource StartButton}"/>
+                <Label Grid.Column="2" Content="Stop" x:Name="lbl_PlcStatusStop" MouseLeftButtonUp="lbl_PlcStatusStop_MouseLeftButtonUp" Style="{StaticResource StartButton}"/>
             </Grid>
+            
         </StackPanel>
 
         <!-- ADD DB -->
@@ -61,9 +72,9 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Row="0" Grid.Column="0" Text="1" x:Name="txtDBNumber" Style="{StaticResource InputBox}"/>
-            <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtDBName" Style="{StaticResource InputBox}"/>
-            <Label Grid.Row="0" Grid.Column="2" Content="Create DB" x:Name="lblAddDB" MouseLeftButtonDown="lblAddDB_MouseLeftButtonDown" Style="{StaticResource StartButton}" />
+            <TextBox Text="1" x:Name="txtDBNumber" Style="{StaticResource InputBox}"/>
+            <TextBox  Grid.Column="1" x:Name="txtDBName" Style="{StaticResource InputBox}"/>
+            <Label Grid.Column="2" Content="Create DB" x:Name="lblAddDB" MouseLeftButtonDown="lblAddDB_MouseLeftButtonDown" Style="{StaticResource StartButton}" />
 
             <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" Height="auto">
                 <StackPanel x:Name="DBStack" Orientation="Vertical"/>
