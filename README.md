@@ -3,7 +3,7 @@ PLC server for Windows
 
 <ul>
   <li>WPF design</li>
-  <li></li>
+  <li>Lightweight</li>
 </ul>
 
-![alt text](https://github.com/somapatrik/S7Lite/blob/master/Picture/preview.png)#
+![alt text](https://github.com/somapatrik/S7Lite/blob/master/Picture/preview.png)
